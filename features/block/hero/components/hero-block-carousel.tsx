@@ -1,3 +1,4 @@
+// src/components/features/block/hero-block-carousel.tsx
 "use client";
 
 import Image from "next/image";
@@ -5,14 +6,18 @@ import { useEffect, useState } from "react";
 
 import ImageUploader from "@/components/media/image-uploader";
 import { HeroBlockData } from "@/features/block";
+// 💡 1. 共通の画像ピッカーフックをインポート
+import { useImagePicker } from "@/components/image-picker";
 
 type Props = HeroBlockData & {
-  onOpenImageUploader: () => void;
   edit?: boolean;
+  onUpdateBlock: (updatedData: HeroBlockData) => void; // 💡 2. 親へ更新を伝える関数を追加
 };
+
 export default function HeroBlockCarousel(props: Props) {
   const data = props;
-  const { edit = false, onOpenImageUploader } = props;
+  // 💡 3. 古い onOpenImageUploader は受け取らず、onUpdateBlock を受け取る
+  const { edit = false, onUpdateBlock } = props;
   const INTERVAL = 3000;
   const DURATION = 700;
 
@@ -21,6 +26,27 @@ export default function HeroBlockCarousel(props: Props) {
 
   const [index, setIndex] = useState(0);
   const [transition, setTransition] = useState(true);
+
+  // 💡 4. 共通のリモコン（openPicker）を取り出す
+  const { openPicker } = useImagePicker();
+
+  // 💡 5. カメラボタンが押された時の「既存の配列に画像を追加する」処理を定義
+  const handleImageEditClick = () => {
+    openPicker((newUrl: string) => {
+      // 既存のimagesの末尾に、新しく選んだ画像のオブジェクトを追加した配列を作る
+      const updatedImages = [
+        ...images,
+        { url: newUrl, alt: data.title || "Slide Image" },
+      ];
+
+      // 親コンポーネント（EditPageContainerなど）へ更新データを届ける
+      onUpdateBlock({
+        ...data,
+        images: updatedImages,
+      });
+    });
+  };
+
   useEffect(() => {
     if (images.length === 0) return;
 
@@ -52,9 +78,19 @@ export default function HeroBlockCarousel(props: Props) {
     };
   }, [index, images.length]);
 
+  // 画像が1枚もない場合の初期表示（Welcome表示）
   if (images.length === 0) {
     return (
       <div className="relative flex min-h-[86svh] items-center justify-center bg-slate-900 px-6 text-center text-white">
+        {/* 💡 画像がないときでも編集モードならカメラボタンを出す */}
+        {edit && (
+          <div className="absolute right-4 top-4 z-20">
+            <ImageUploader
+              data={data}
+              onOpenImageUploader={handleImageEditClick}
+            />
+          </div>
+        )}
         <div className="max-w-4xl">
           <p className="text-sm font-semibold text-blue-100">Welcome</p>
           <h1 className="mt-4 text-4xl font-bold leading-tight md:text-6xl">
@@ -75,12 +111,14 @@ export default function HeroBlockCarousel(props: Props) {
       {/* カメラボタン */}
       {edit && (
         <div className="absolute right-4 top-4 z-20">
+          {/* 💡 6. 新しいハンドル関数を繋ぎこむ */}
           <ImageUploader
             data={data}
-            onOpenImageUploader={onOpenImageUploader}
+            onOpenImageUploader={handleImageEditClick}
           />
         </div>
       )}
+
       <div
         className={`flex min-h-[86svh] ${
           transition ? "transition-transform duration-700" : ""
@@ -108,7 +146,6 @@ export default function HeroBlockCarousel(props: Props) {
 
       <div className="absolute inset-0 z-10 flex items-center justify-center px-6 pb-28 pt-24 text-center">
         <div className="max-w-4xl">
-          {/*<p className="text-sm font-semibold text-blue-100">Welcome</p>*/}
           <h1 className="mt-4 text-4xl font-bold leading-tight md:text-6xl">
             {data.title}
           </h1>
