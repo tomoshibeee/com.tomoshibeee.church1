@@ -1,11 +1,11 @@
 import { getSession } from "@/lib/auth"; // 💡 セッションチェックを復活！
 import { UserData } from "@/types/user";
-import { getSiteMetas } from "@/services/siteMetaService";
-import { getGlobalNews, toGlobalNewsItems } from "@/services/globalNewsService";
+import { getSiteMetas } from "@/services/site-meta-service";
+import { getGlobalNews, toGlobalNewsItems } from "@/services/global-news-service";
 
-import Footer from "@/components/shared/Footer";
-import { SiteLink } from "@/components/siteLink/SiteLink";
-import { PortalNavigation } from "@/components/navigations/PortalNavigation";
+import Footer from "@/components/shared/footer";
+import { SiteLink } from "@/components/site-link/site-link";
+import { PortalNavigation } from "@/components/navigations/portal-navigation";
 
 export default async function Page() {
   // 1. ログイン状態（セッション）をチェック（ただし、未ログインでもリダイレクトはしない）

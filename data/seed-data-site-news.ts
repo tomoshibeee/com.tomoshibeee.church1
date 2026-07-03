@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto";
 
-import { getRandomDate } from "@/utils/date/getRandomDate";
+import { getRandomDate } from "@/utils/date/get-random-date";
 
 import { dummySiteNews } from "@/lib/data";
 

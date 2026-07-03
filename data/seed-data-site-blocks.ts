@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import { SiteSection } from "@/models/siteSection";
+import { SiteSection } from "@/models/site-section";
 import { dummySites } from "@/lib/data";
 
 export function dummySiteBlockModelData(

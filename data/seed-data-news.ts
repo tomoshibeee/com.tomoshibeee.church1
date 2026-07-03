@@ -1,5 +1,5 @@
-import { GlobalNews } from "../models/globalNews";
-import { getRandomDate } from "@/utils/date/getRandomDate";
+import { GlobalNews } from "../models/global-news";
+import { getRandomDate } from "@/utils/date/get-random-date";
 
 export function dummyNewsModelData(): GlobalNews[] {
   return [

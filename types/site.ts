@@ -1,7 +1,7 @@
 import { SectionData } from "@/features/section/types";
-import { MetaData } from "./siteMeta";
-import { MenuItem } from "./siteMenu";
-import { SiteSocialLink } from "@/models/siteSocialLink";
+import { MetaData } from "./site-meta";
+import { MenuItem } from "./site-menu";
+import { SiteSocialLink } from "@/models/site-social-link";
 
 export type SiteData = {
   meta: MetaData;

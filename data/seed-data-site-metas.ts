@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import { SiteMeta } from "../models/siteMeta";
+import { SiteMeta } from "../models/site-meta";
 
 import { dummySiteMetas } from "@/lib/data";
 

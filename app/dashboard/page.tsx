@@ -4,13 +4,13 @@ import { getSession } from "@/lib/auth"; // TODO : 仮
 
 import { UserData } from "@/types/user";
 
-import { getSiteMetas } from "@/services/siteMetaService";
-import { getGlobalNews, toGlobalNewsItems } from "@/services/globalNewsService";
+import { getSiteMetas } from "@/services/site-meta-service";
+import { getGlobalNews, toGlobalNewsItems } from "@/services/global-news-service";
 
-import Footer from "@/components/shared/Footer";
-import { SiteLink } from "@/components/siteLink/SiteLink";
+import Footer from "@/components/shared/footer";
+import { SiteLink } from "@/components/site-link/site-link";
 
-import { DashboardNavigation } from "@/components/navigations/DashboardNavigation";
+import { DashboardNavigation } from "@/components/navigations/dashboard-navigation";
 
 export default async function Page() {
   const session = await getSession();

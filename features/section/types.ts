@@ -1,5 +1,5 @@
 import { Block } from "@/features/block";
-import { SectionType } from "@/models/siteSection";
+import { SectionType } from "@/models/site-section";
 
 export type SectionData = {
   id: string;

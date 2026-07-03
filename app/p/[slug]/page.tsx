@@ -1,8 +1,8 @@
-import { getSiteIdBySlug } from "@/services/siteService";
-import { getSiteData } from "@/services/siteService";
-import { getGlobalNews, toGlobalNewsItems } from "@/services/globalNewsService";
+import { getSiteIdBySlug } from "@/services/site-service";
+import { getSiteData } from "@/services/site-service";
+import { getGlobalNews, toGlobalNewsItems } from "@/services/global-news-service";
 
-import Template from "@/components/templates/Template";
+import Template from "@/components/templates/template";
 
 export default async function Page({
   params,
