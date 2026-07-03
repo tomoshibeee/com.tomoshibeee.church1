@@ -3,9 +3,9 @@
 import { useState } from "react";
 
 import Template from "@/components/templates/template";
+import { ImagePickerModal, useImagePicker } from "@/components/image-picker";
 import { SiteData } from "@/types/site";
 import { Block } from "@/features/block/index";
-import { ImageDrawer } from "@/features/drawer/image-drawer/image-drawer";
 
 type Props = {
   site: SiteData;
@@ -16,7 +16,12 @@ export default function EditPageContainer(props: Props) {
 
   const [editingBlock, setEditingBlock] = useState<Block | null>(null);
   const [sections, setSections] = useState(site.layout.sections);
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  // 💡 開閉状態やコールバックのゴチャついたロジックをすべてフックにカプセル化
+  const { openPicker, pickerProps } = useImagePicker((url) => {
+    // 画像が選ばれたときの処理（ここに必要な保存ロジックを書く）
+    alert(`${url}を保存?`);
+  });
 
   return (
     <>
@@ -26,17 +31,13 @@ export default function EditPageContainer(props: Props) {
           layout: { ...site.layout, sections: sections },
         }}
         edit
-        onOpenImageUploader={() => setIsDrawerOpen(true)}
+        // 💡 状態変更関数を直接渡すのではなく、フックから提供される関数を呼ぶだけ
+        onOpenImageUploader={openPicker}
         newsItems={[]}
       />
 
-      <ImageDrawer
-        open={isDrawerOpen}
-        onClose={() => setIsDrawerOpen(false)}
-        onUpload={(url) => {
-          alert(`${url}を保存?`);
-        }}
-      />
+      {/* 💡 {...pickerProps} で open, onClose, onSelect を一括展開してスッキリ */}
+      <ImagePickerModal {...pickerProps} />
     </>
   );
 }
