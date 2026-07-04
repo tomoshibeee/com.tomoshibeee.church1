@@ -11,31 +11,16 @@ type Props = {
   site: SiteData;
   edit?: boolean;
   newsItems: NewsItem[]; // 💡 ドロワーを開く関数ではなく、お知らせデータ自体を受け取るように変更
-  onOpenImageUploader?: () => void;
+  onUpdateBlock?: () => void;
 };
 
 export default function Template(props: Props) {
-  const { site, edit, newsItems, onOpenImageUploader } = props;
+  const { site, edit, newsItems, onUpdateBlock } = props;
   const sections = site?.layout?.sections;
 
   return (
     <div>
       <Header site={site} newsItems={newsItems} />
-
-      {/* {edit && (
-        <div>
-          <input
-            type="file"
-            onChange={(e) => {
-              if (e.target.files?.[0]) {
-                setFile(e.target.files[0]);
-              }
-            }}
-          />
-
-          <button onClick={uploadImage}>Upload Image</button>
-        </div>
-      )} */}
 
       {sections?.map((section: SectionData, sectionIndex: number) => (
         <BaseSection
@@ -43,7 +28,7 @@ export default function Template(props: Props) {
           meta={site.meta}
           section={{ ...section }}
           edit={edit}
-          onOpenImageUploader={onOpenImageUploader ?? (() => {})}
+          onUpdateBlock={onUpdateBlock ?? (() => {})}
         />
       ))}
 

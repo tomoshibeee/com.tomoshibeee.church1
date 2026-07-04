@@ -24,67 +24,67 @@ import {
 interface Props {
   meta: MetaData;
   block: Block;
-  onOpenImageUploader: () => void;
+  onUpdateBlock: () => void;
   edit?: boolean;
 }
 type BlockRendererMap = {
   hero: (
     block: HeroBlockType,
     meta: MetaData,
-    onOpenImageUploader: () => void,
+    onUpdateBlock: () => void,
     edit?: boolean,
   ) => JSX.Element;
   news: (
     block: NewsBlockType,
     meta: MetaData,
-    onOpenImageUploader: () => void,
+    onUpdateBlock: () => void,
     edit?: boolean,
   ) => JSX.Element;
   greeting: (
     block: GreetingBlockType,
     meta: MetaData,
-    onOpenImageUploader: () => void,
+    onUpdateBlock: () => void,
     edit?: boolean,
   ) => JSX.Element;
   access: (
     block: AccessBlockType,
     meta: MetaData,
-    onOpenImageUploader: () => void,
+    onUpdateBlock: () => void,
     edit?: boolean,
   ) => JSX.Element;
   cta: (
     block: CtaBlockType,
     meta: MetaData,
-    onOpenImageUploader: () => void,
+    onUpdateBlock: () => void,
     edit?: boolean,
   ) => JSX.Element;
   contact: (
     block: ContactBlockType,
     meta: MetaData,
-    onOpenImageUploader: () => void,
+    onUpdateBlock: () => void,
     edit?: boolean,
   ) => JSX.Element;
   service: (
     block: ServiceBlockType,
     meta: MetaData,
-    onOpenImageUploader: () => void,
+    onUpdateBlock: () => void,
     edit?: boolean,
   ) => JSX.Element;
 };
 
 const blockRegistry: BlockRendererMap = {
-  hero: (block, _meta, onOpenImageUploader, edit) => {
+  hero: (block, _meta, onUpdateBlock, edit) => {
     if (block.type !== "hero") return {} as JSX.Element;
     return block.variant === "carousel" ? (
       <HeroBlockCarousel
         {...block.data}
-        onOpenImageUploader={onOpenImageUploader}
+        onUpdateBlock={onUpdateBlock}
         edit={edit}
       />
     ) : (
       <HeroBlockImage
         {...block.data}
-        onOpenImageUploader={onOpenImageUploader}
+        onUpdateBlock={onUpdateBlock}
         edit={edit}
       />
     );
@@ -122,15 +122,12 @@ const blockRegistry: BlockRendererMap = {
 };
 
 export default function BlockRenderer(props: Props) {
-  const { meta, block, edit, onOpenImageUploader } = props;
+  const { meta, block, edit, onUpdateBlock } = props;
   const render = blockRegistry[block.type];
 
   if (!render) return null;
 
-  const content = render(block as any, meta, onOpenImageUploader, edit);
+  const content = render(block as any, meta, onUpdateBlock, edit);
 
-  // if (edit && onEdit) {
-  //   return <div onClick={() => onEdit(block)}>{content}</div>;
-  // }
   return <div>{content}</div>;
 }
