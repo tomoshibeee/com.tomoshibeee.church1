@@ -1,4 +1,3 @@
-// src/app/dashboard/edit-page-container.tsx（※実際のパスに合わせてください）
 "use client";
 
 import { useState } from "react";
@@ -8,17 +7,14 @@ import { ImagePickerProvider } from "@/components/image-picker";
 
 type Props = { site: SiteData };
 
-export default function SiteNavigation({ site }: Props) {
-  const [sections, setSections] = useState(site.layout.sections);
+export default function SiteNavigation({ site: initialSite }: Props) {
+  const [site, setSite] = useState<SiteData>(initialSite);
 
   return (
-    // 💡 必ずこのファイルの一番大元で包んで、下の Template に電波を届けます
     <ImagePickerProvider>
+      {/* 💡 site をそのまま流し込むだけでOK。Templateの中で展開する必要もなくなります */}
       <Template
-        site={{
-          ...site,
-          layout: { ...site.layout, sections: sections },
-        }}
+        site={site}
         edit
         newsItems={[]}
       />
