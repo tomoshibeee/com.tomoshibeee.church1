@@ -90,7 +90,7 @@ const blockRegistry: BlockRendererMap = {
     );
   },
 
-  news: (block, _meta, _onOpenImageUploader, edit) => {
+  news: (block, _meta, _onUpdateBlock, edit) => {
     if (block.type !== "news") return {} as JSX.Element;
     return <NewsBlock {...block.data} edit={edit} />;
   },
@@ -104,18 +104,18 @@ const blockRegistry: BlockRendererMap = {
     return <ServiceBlock {...block.data} edit={edit} />;
   },
 
-  contact: (block, meta, _onOpenImageUploader, edit) => {
+  contact: (block, meta, _onUpdateBlock, edit) => {
     return <ContactBlock {...block.data} meta={meta} edit={edit} />;
   },
 
-  access: (_block, meta, _onOpenImageUploader, edit) => {
+  access: (_block, meta, _onUpdateBlock, edit) => {
     // if (block.type !== "access") return {} as JSX.Element;
     if (!meta) throw new Error("meta missing");
     // if (!meta.slug) throw new Error("slug missing");
     return <AccessBlock {...meta} edit={edit} />;
   },
 
-  cta: (block, _meta, _onOpenImageUploader, edit) => {
+  cta: (block, _meta, _onUpdateBlock, edit) => {
     if (block.type !== "cta") return {} as JSX.Element;
     return <CtaBlock {...block.data} edit={edit} />;
   },
