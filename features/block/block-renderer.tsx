@@ -95,12 +95,12 @@ const blockRegistry: BlockRendererMap = {
     return <NewsBlock {...block.data} edit={edit} />;
   },
 
-  greeting: (block, _meta, _onOpenImageUploader, edit) => {
+  greeting: (block, _meta, onUpdateBlock, edit) => {
     if (block.type !== "greeting") return {} as JSX.Element;
-    return <GreetingBlock {...block.data} edit={edit} />;
+    return <GreetingBlock {...block.data} onUpdateBlock={onUpdateBlock} edit={edit} />;
   },
 
-  service: (block, _meta, _onOpenImageUploader, edit) => {
+  service: (block, _meta, _onUpdateBlock, edit) => {
     return <ServiceBlock {...block.data} edit={edit} />;
   },
 
