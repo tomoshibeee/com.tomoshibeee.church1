@@ -53,7 +53,7 @@ export default function SiteNavigation({
       };
     });
 
-    alert("ブロックが更新されました。");
+    // alert("ブロックが更新されました。");
   };
   return (
     <ImagePickerProvider>
