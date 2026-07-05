@@ -41,7 +41,7 @@ export function MetaModal({ isOpen, onClose, initialData, onSave }: MetaModalPro
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-      <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-xl animate-in fade-in-50 zoom-in-95 duration-200">
+      <div className="w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-xl bg-white p-6 shadow-xl animate-in fade-in-50 zoom-in-95 duration-200">
         {/* ヘッダー */}
         <div className="mb-4 flex items-center justify-between border-b pb-3">
           <h2 className="text-xl font-bold text-gray-800">サイト基本情報の編集</h2>
@@ -55,59 +55,92 @@ export function MetaModal({ isOpen, onClose, initialData, onSave }: MetaModalPro
 
         {/* フォーム */}
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {/* サイト名 */}
+          {/* サイト名・店舗名 (name) */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">サイト名・店舗名</label>
             <input
               type="text"
-              {...register("siteName", { required: "サイト名は必須です" })}
+              {...register("name", { required: "サイト名は必須です" })}
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
-            {errors.siteName && (
-              <p className="mt-1 text-xs text-red-500">{errors.siteName.message}</p>
+            {errors.name && (
+              <p className="mt-1 text-xs text-red-500">{errors.name.message}</p>
             )}
           </div>
 
-          {/* 電話番号 */}
+          {/* 電話番号 (tel) */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">電話番号</label>
             <input
               type="tel"
               {...register("tel")}
-              placeholder="03-XXXX-XXXX"
+              placeholder="054-111-1111"
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
           </div>
 
-          {/* 郵便番号 */}
+          {/* メールアドレス (email) */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">メールアドレス</label>
+            <input
+              type="email"
+              {...register("email")}
+              placeholder="info@example.com"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
+
+          {/* 郵便番号 (postalCode) */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">郵便番号</label>
             <input
               type="text"
-              {...register("zipCode")}
-              placeholder="123-4567"
+              {...register("postalCode")}
+              placeholder="421-1111"
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
           </div>
 
-          {/* 住所 */}
+          {/* 住所 (address) */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">住所</label>
             <input
               type="text"
               {...register("address")}
-              placeholder="東京都渋谷区..."
+              placeholder="静岡県静岡市..."
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
           </div>
 
-          {/* 営業時間など（必要に応じて自由に追加） */}
+          {/* 建物名・部屋番号 (bldg) */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">営業時間・受付時間</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">建物名・部屋番号</label>
             <input
               type="text"
-              {...register("openingHours")}
-              placeholder="10:00 〜 19:00（水曜定休）"
+              {...register("bldg")}
+              placeholder="ビル名、マンション名など"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
+
+          {/* アクセス (access) */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">アクセス</label>
+            <input
+              type="text"
+              {...register("access")}
+              placeholder="JR静岡駅から徒歩15分"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
+
+          {/* サイトの説明文 (description) */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">サイトの説明文（紹介文）</label>
+            <textarea
+              {...register("description")}
+              rows={3}
+              placeholder="サイトの紹介文を入力してください。"
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
           </div>

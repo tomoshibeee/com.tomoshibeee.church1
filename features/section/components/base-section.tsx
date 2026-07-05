@@ -13,7 +13,7 @@ type Props = {
 };
 
 export default function BaseSection(props: Props) {
-  const { section, meta, edit, onUpdateBlock } = props;
+  const { section, meta, edit, onUpdateBlock, onOpenMetaEditor } = props;
   if (!section) return null;
   return (
     <section id={section.id} className="p-0 text-gray-800">
@@ -23,7 +23,7 @@ export default function BaseSection(props: Props) {
           meta={meta}
           block={block}
           onUpdateBlock={onUpdateBlock} 
-          onOpenMetaEditor={props.onOpenMetaEditor}
+          onOpenMetaEditor={onOpenMetaEditor}
           edit={edit}
         />
       ))}

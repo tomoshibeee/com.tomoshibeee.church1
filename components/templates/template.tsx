@@ -11,8 +11,8 @@ type Props = {
   site: SiteData;
   edit?: boolean;
   newsItems: NewsItem[];
-  onUpdateBlock: (blockId: string, updatedData: Record<string, any>) => void;
-  onOpenMetaEditor: () => void;
+  onUpdateBlock?: (blockId: string, updatedData: Record<string, any>) => void;
+  onOpenMetaEditor?: () => void;
 };
 
 export default function Template(props: Props) {

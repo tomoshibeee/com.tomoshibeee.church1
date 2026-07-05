@@ -25,6 +25,7 @@ interface Props {
   meta: MetaData;
   block: Block;
   onUpdateBlock: (blockId: string, updatedData: Record<string, any>) => void;
+  onOpenMetaEditor: () => void;
   edit?: boolean;
 }
 type BlockRendererMap = {
@@ -129,7 +130,8 @@ const blockRegistry: BlockRendererMap = {
 };
 
 export default function BlockRenderer(props: Props) {
-  const { meta, block, edit, onUpdateBlock } = props;
+  
+  const { meta, block, edit, onUpdateBlock, onOpenMetaEditor } = props;
   const render = blockRegistry[block.type];
 
   if (!render) return null;
@@ -140,7 +142,7 @@ export default function BlockRenderer(props: Props) {
     }
   };
 
-  const content = render(block as any, meta, handleUpdateFields, edit);
+  const content = render(block as any, meta, handleUpdateFields, onOpenMetaEditor, edit);
 
   return <div>{content}</div>;
 }
