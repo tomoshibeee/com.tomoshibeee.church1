@@ -2,6 +2,7 @@
 
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { FaXmark } from "react-icons/fa6"; // NewsModalとアイコンも統一
 import { MetaData } from "@/types/site-meta";
 
 interface MetaModalProps {
@@ -11,7 +12,12 @@ interface MetaModalProps {
   onSave: (updatedMeta: MetaData) => void;
 }
 
-export function MetaModal({ isOpen, onClose, initialData, onSave }: MetaModalProps) {
+export function MetaModal({
+  isOpen,
+  onClose,
+  initialData,
+  onSave,
+}: MetaModalProps) {
   const {
     register,
     handleSubmit,
@@ -40,24 +46,42 @@ export function MetaModal({ isOpen, onClose, initialData, onSave }: MetaModalPro
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-      <div className="w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-xl bg-white p-6 shadow-xl animate-in fade-in-50 zoom-in-95 duration-200">
-        {/* ヘッダー */}
-        <div className="mb-4 flex items-center justify-between border-b pb-3">
-          <h2 className="text-xl font-bold text-gray-800">サイト基本情報の編集</h2>
+    <div className="fixed inset-0 z-[99999] flex items-end justify-center md:items-center">
+      {/* 🌫️ 背景の黒透明（ブラーをかけて高級感を演出） */}
+      <div
+        className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity duration-300"
+        onClick={onClose}
+      />
+
+      {/* 📦 モーダル本体（スマホでは下からスライド、PCでは中央に表示） */}
+      <div
+        className="relative z-10 w-full rounded-t-2xl bg-white p-6 shadow-2xl transition-all duration-300 md:max-w-lg md:rounded-2xl max-h-[85vh] flex flex-col
+        animate-in fade-in slide-in-from-bottom md:zoom-in-95"
+      >
+        {/* 上部のタイトルバー */}
+        <div className="flex items-center justify-between mb-4 flex-shrink-0 border-b border-slate-50 pb-2">
+          <h3 className="text-sm font-bold text-gray-800">
+            サイト基本情報の編集
+          </h3>
           <button
+            type="button"
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="rounded-full p-1 text-gray-400 hover:bg-slate-100 hover:text-gray-700 transition-colors cursor-pointer"
           >
-            ✕
+            <FaXmark size={18} />
           </button>
         </div>
 
-        {/* フォーム */}
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        {/* フォーム入力エリア（スクロール対応エリア） */}
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="overflow-y-auto space-y-4 pr-1 pb-4 flex-1 scrollbar-thin"
+        >
           {/* サイト名・店舗名 (name) */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">サイト名・店舗名</label>
+            <label className="block text-xs font-bold text-gray-700 mb-1">
+              サイト名・店舗名
+            </label>
             <input
               type="text"
               {...register("name", { required: "サイト名は必須です" })}
@@ -70,7 +94,9 @@ export function MetaModal({ isOpen, onClose, initialData, onSave }: MetaModalPro
 
           {/* 電話番号 (tel) */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">電話番号</label>
+            <label className="block text-xs font-bold text-gray-700 mb-1">
+              電話番号
+            </label>
             <input
               type="tel"
               {...register("tel")}
@@ -81,7 +107,9 @@ export function MetaModal({ isOpen, onClose, initialData, onSave }: MetaModalPro
 
           {/* メールアドレス (email) */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">メールアドレス</label>
+            <label className="block text-xs font-bold text-gray-700 mb-1">
+              メールアドレス
+            </label>
             <input
               type="email"
               {...register("email")}
@@ -92,7 +120,9 @@ export function MetaModal({ isOpen, onClose, initialData, onSave }: MetaModalPro
 
           {/* 郵便番号 (postalCode) */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">郵便番号</label>
+            <label className="block text-xs font-bold text-gray-700 mb-1">
+              郵便番号
+            </label>
             <input
               type="text"
               {...register("postalCode")}
@@ -103,7 +133,9 @@ export function MetaModal({ isOpen, onClose, initialData, onSave }: MetaModalPro
 
           {/* 住所 (address) */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">住所</label>
+            <label className="block text-xs font-bold text-gray-700 mb-1">
+              住所
+            </label>
             <input
               type="text"
               {...register("address")}
@@ -114,7 +146,9 @@ export function MetaModal({ isOpen, onClose, initialData, onSave }: MetaModalPro
 
           {/* 建物名・部屋番号 (bldg) */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">建物名・部屋番号</label>
+            <label className="block text-xs font-bold text-gray-700 mb-1">
+              建物名・部屋番号
+            </label>
             <input
               type="text"
               {...register("bldg")}
@@ -125,7 +159,9 @@ export function MetaModal({ isOpen, onClose, initialData, onSave }: MetaModalPro
 
           {/* アクセス (access) */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">アクセス</label>
+            <label className="block text-xs font-bold text-gray-700 mb-1">
+              アクセス
+            </label>
             <input
               type="text"
               {...register("access")}
@@ -136,7 +172,9 @@ export function MetaModal({ isOpen, onClose, initialData, onSave }: MetaModalPro
 
           {/* サイトの説明文 (description) */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">サイトの説明文（紹介文）</label>
+            <label className="block text-xs font-bold text-gray-700 mb-1">
+              サイトの説明文（紹介文）
+            </label>
             <textarea
               {...register("description")}
               rows={3}
@@ -145,20 +183,20 @@ export function MetaModal({ isOpen, onClose, initialData, onSave }: MetaModalPro
             />
           </div>
 
-          {/* アクションボタン */}
-          <div className="flex justify-end gap-2 border-t pt-4 mt-6">
+          {/* 💾 アクションボタンエリア（スクロールしても最下部に固定されるようにform内に配置） */}
+          <div className="flex justify-end gap-2 border-t border-slate-100 pt-4 mt-6">
             <button
               type="button"
               onClick={onClose}
               disabled={isSubmitting}
-              className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+              className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 cursor-pointer"
             >
               キャンセル
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center"
+              className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center cursor-pointer"
             >
               {isSubmitting ? "保存中..." : "変更を保存"}
             </button>
