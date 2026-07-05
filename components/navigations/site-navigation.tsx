@@ -20,13 +20,16 @@ export default function SiteNavigation({
   const [site, setSite] = useState<SiteData>(initialSite);
   const [isMetaOpen, setIsMetaOpen] = useState(false);
   const handleSaveMeta = async (updatedMeta: MetaData) => {
-    // ここでローカルのステートを更新（これでAccessやContactの表示がリアルタイムに変わる）
-    setSite({ ...site, ...updatedMeta });
+    setSite((prevSite) => ({
+      ...prevSite,
+      meta: {
+        ...prevSite.meta,
+        ...updatedMeta,
+      },
+    }));
 
-    // ※実際のDBへの保存は、右上の「サイト公開・保存」ボタンで一括で行うか、
-    // あるいはここで個別に API (axios/fetch) を叩いてもOKです。
-  };
-  // 💡 引数を (blockId, updatedData) を受け取れるように修正
+    // ※ 実際のDBへの保存APIなどを叩く場合はここに追記します
+  }; // 💡 引数を (blockId, updatedData) を受け取れるように修正
   const handleUpdateBlock = (
     blockId: string,
     updatedData: Record<string, any>,
