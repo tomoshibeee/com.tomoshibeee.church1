@@ -11,12 +11,12 @@ type Props = {
   site: SiteData;
   edit?: boolean;
   newsItems: NewsItem[];
-  // 💡 型を引数ありに変更
-  onUpdateBlock?: (blockId: string, updatedData: Record<string, any>) => void;
+  onUpdateBlock: (blockId: string, updatedData: Record<string, any>) => void;
+  onOpenMetaEditor: () => void;
 };
 
 export default function Template(props: Props) {
-  const { site, edit, newsItems, onUpdateBlock } = props;
+  const { site, edit, newsItems, onUpdateBlock, onOpenMetaEditor } = props;
   const sections = site?.layout?.sections;
 
   return (
@@ -29,8 +29,8 @@ export default function Template(props: Props) {
           meta={site.meta}
           section={{ ...section }}
           edit={edit}
-          // 💡 空の関数にも型を合わせておく
           onUpdateBlock={onUpdateBlock ?? (() => {})}
+          onOpenMetaEditor={onOpenMetaEditor ?? (() => {})}
         />
       ))}
 

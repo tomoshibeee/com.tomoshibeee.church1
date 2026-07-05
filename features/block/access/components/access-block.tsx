@@ -5,11 +5,13 @@ import MapBlock from "./map-embed";
 import { MetaData } from "@/types/site-meta";
 
 type Props = MetaData & {
+  onOpenMetaEditor: () => void;
   edit?: boolean;
 };
 
 export default function AccessBlock(props: Props) {
   const meta = props;
+  const { onOpenMetaEditor, edit } = props;
   const mapAddress = [
     meta.postalCode && `〒${meta.postalCode}`,
     meta.address,
@@ -65,6 +67,7 @@ export default function AccessBlock(props: Props) {
           </div>
         )}
       </div>
+      <button onClick={() => onOpenMetaEditor()}>サイト基本情報編集</button>
     </div>
   );
 }

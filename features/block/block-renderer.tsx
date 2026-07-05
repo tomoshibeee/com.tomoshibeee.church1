@@ -32,55 +32,62 @@ type BlockRendererMap = {
     block: HeroBlockType,
     meta: MetaData,
     onUpdateBlock: (updatedData: Record<string, any>) => void,
+    onOpenMetaEditor: () => void,
     edit?: boolean,
   ) => JSX.Element;
   news: (
     block: NewsBlockType,
     meta: MetaData,
     onUpdateBlock: (updatedData: Record<string, any>) => void,
+    onOpenMetaEditor: () => void,
     edit?: boolean,
   ) => JSX.Element;
   greeting: (
     block: GreetingBlockType,
     meta: MetaData,
     onUpdateBlock: (updatedData: Record<string, any>) => void,
+    onOpenMetaEditor: () => void,
     edit?: boolean,
   ) => JSX.Element;
   access: (
     block: AccessBlockType,
     meta: MetaData,
     onUpdateBlock: (updatedData: Record<string, any>) => void,
+    onOpenMetaEditor: () => void, 
     edit?: boolean,
   ) => JSX.Element;
   cta: (
     block: CtaBlockType,
     meta: MetaData,
     onUpdateBlock: (updatedData: Record<string, any>) => void,
+    onOpenMetaEditor: () => void,
     edit?: boolean,
   ) => JSX.Element;
   contact: (
     block: ContactBlockType,
     meta: MetaData,
     onUpdateBlock: (updatedData: Record<string, any>) => void,
+    onOpenMetaEditor: () => void,
     edit?: boolean,
   ) => JSX.Element;
   service: (
     block: ServiceBlockType,
     meta: MetaData,
     onUpdateBlock: (updatedData: Record<string, any>) => void,
+    onOpenMetaEditor: () => void,
     edit?: boolean,
   ) => JSX.Element;
 };
 
 const blockRegistry: BlockRendererMap = {
-  hero: (block, _meta, onUpdateBlock, edit) => {
+  hero: (block, _meta, onUpdateBlock, _onOpenMetaEditor, edit) => {
     if (block.type !== "hero") return {} as JSX.Element;
     return block.variant === "carousel" ? (
       <HeroBlockCarousel
         {...block.data}
         onUpdateBlock={onUpdateBlock}
         edit={edit}
-      />
+      />  
     ) : (
       <HeroBlockImage
         {...block.data}
@@ -90,32 +97,32 @@ const blockRegistry: BlockRendererMap = {
     );
   },
 
-  news: (block, _meta, _onUpdateBlock, edit) => {
+  news: (block, _meta, _onUpdateBlock, onOpenMetaEditor, edit) => {
     if (block.type !== "news") return {} as JSX.Element;
     return <NewsBlock {...block.data} edit={edit} />;
   },
 
-  greeting: (block, _meta, onUpdateBlock, edit) => {
+  greeting: (block, _meta, onUpdateBlock, _onOpenMetaEditor,    edit) => {
     if (block.type !== "greeting") return {} as JSX.Element;
     return <GreetingBlock {...block.data} onUpdateBlock={onUpdateBlock} edit={edit} />;
   },
 
-  service: (block, _meta, _onUpdateBlock, edit) => {
+  service: (block, _meta, _onUpdateBlock, _onOpenMetaEditor, edit) => {
     return <ServiceBlock {...block.data} edit={edit} />;
   },
 
-  contact: (block, meta, _onUpdateBlock, edit) => {
-    return <ContactBlock {...block.data} meta={meta} edit={edit} />;
+  contact: (block, meta, _onUpdateBlock, onOpenMetaEditor, edit) => {
+    return <ContactBlock {...block.data} meta={meta} onOpenMetaEditor={onOpenMetaEditor} edit={edit} />;
   },
 
-  access: (_block, meta, _onUpdateBlock, edit) => {
+  access: (_block, meta, _onUpdateBlock, onOpenMetaEditor, edit) => {
     // if (block.type !== "access") return {} as JSX.Element;
     if (!meta) throw new Error("meta missing");
     // if (!meta.slug) throw new Error("slug missing");
-    return <AccessBlock {...meta} edit={edit} />;
+    return <AccessBlock {...meta} onOpenMetaEditor={onOpenMetaEditor} edit={edit} />;
   },
 
-  cta: (block, _meta, _onUpdateBlock, edit) => {
+  cta: (block, _meta, _onUpdateBlock, _onOpenMetaEditor, edit) => {
     if (block.type !== "cta") return {} as JSX.Element;
     return <CtaBlock {...block.data} edit={edit} />;
   },

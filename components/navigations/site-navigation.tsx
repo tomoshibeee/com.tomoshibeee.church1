@@ -4,6 +4,8 @@ import { useState } from "react";
 import Template from "@/components/templates/template";
 import { SiteData } from "@/types/site";
 import { ImagePickerProvider } from "@/components/image-picker";
+import { MetaModal } from "@/features/meta/components/meta-modal";
+import { MetaData } from "@/types/site-meta";
 import { NewsItem } from "@/features/block/news/types";
 
 type Props = {
@@ -16,6 +18,14 @@ export default function SiteNavigation({
   newsItems,
 }: Props) {
   const [site, setSite] = useState<SiteData>(initialSite);
+  const [isMetaOpen, setIsMetaOpen] = useState(false);
+  const handleSaveMeta = async (updatedMeta: MetaData) => {
+    // ここでローカルのステートを更新（これでAccessやContactの表示がリアルタイムに変わる）
+    setSite({ ...site, ...updatedMeta });
+
+    // ※実際のDBへの保存は、右上の「サイト公開・保存」ボタンで一括で行うか、
+    // あるいはここで個別に API (axios/fetch) を叩いてもOKです。
+  };
   // 💡 引数を (blockId, updatedData) を受け取れるように修正
   const handleUpdateBlock = (
     blockId: string,
@@ -56,14 +66,24 @@ export default function SiteNavigation({
     // alert("ブロックが更新されました。");
   };
   return (
-    <ImagePickerProvider>
-      {/* 💡 site をそのまま流し込むだけでOK。Templateの中で展開する必要もなくなります */}
-      <Template
-        site={site}
-        edit
-        newsItems={newsItems}
-        onUpdateBlock={handleUpdateBlock}
+    <>
+      <ImagePickerProvider>
+        {/* 💡 site をそのまま流し込むだけでOK。Templateの中で展開する必要もなくなります */}
+        <Template
+          site={site}
+          edit
+          newsItems={newsItems}
+          onUpdateBlock={handleUpdateBlock}
+          onOpenMetaEditor={() => setIsMetaOpen(true)}
+        />
+      </ImagePickerProvider>
+      {/* モーダル本体 */}
+      <MetaModal
+        isOpen={isMetaOpen}
+        onClose={() => setIsMetaOpen(false)}
+        initialData={site.meta}
+        onSave={handleSaveMeta}
       />
-    </ImagePickerProvider>
+    </>
   );
 }

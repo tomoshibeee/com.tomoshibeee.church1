@@ -6,6 +6,7 @@ import ContactForm from "./contact-form";
 
 type Props = ContactBlockData & {
   meta: MetaData;
+  onOpenMetaEditor: () => void;
   edit?: boolean;
 };
 
