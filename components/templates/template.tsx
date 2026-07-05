@@ -13,15 +13,16 @@ type Props = {
   newsItems: NewsItem[];
   onUpdateBlock?: (blockId: string, updatedData: Record<string, any>) => void;
   onOpenMetaEditor?: () => void;
+  onOpenMenuEditor?: () => void;
 };
 
 export default function Template(props: Props) {
-  const { site, edit, newsItems, onUpdateBlock, onOpenMetaEditor } = props;
+  const { site, edit, newsItems, onUpdateBlock, onOpenMetaEditor, onOpenMenuEditor } = props;
   const sections = site?.layout?.sections;
 
   return (
     <div>
-      <Header site={site} newsItems={newsItems} />
+      <Header site={site} newsItems={newsItems} onOpenMenuEditor={onOpenMenuEditor} />
 
       {sections?.map((section: SectionData, sectionIndex: number) => (
         <BaseSection

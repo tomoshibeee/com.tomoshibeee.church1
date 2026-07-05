@@ -13,10 +13,11 @@ type Props = {
   site?: SiteData;
   user?: UserData;
   newsItems: NewsItem[]; // 💡 ドロワーを開く関数ではなく、お知らせデータ自体を受け取るように変更
+  onOpenMenuEditor?: () => void; // 💡 メニュー編集モーダルを開く関数を受け取るように変更
 };
 
 export default function Header(props: Props) {
-  const { site, user, newsItems } = props;
+  const { site, user, newsItems, onOpenMenuEditor } = props;
 
   const pathname = usePathname();
 
@@ -30,8 +31,8 @@ export default function Header(props: Props) {
     return (
       <header className={baseClass}>
         <Logo />
-        <PrimaryNavigation newsItems={newsItems} />
-        <MobileNavigation newsItems={newsItems} />
+        <PrimaryNavigation newsItems={newsItems} onOpenMenuEditor={onOpenMenuEditor} />
+        <MobileNavigation newsItems={newsItems} onOpenMenuEditor={onOpenMenuEditor} />
       </header>
     );
   }

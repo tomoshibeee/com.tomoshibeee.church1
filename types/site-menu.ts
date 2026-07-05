@@ -3,6 +3,7 @@ export type MenuItem = {
   label: string;
   href?: string;
   icon?: string;
-  type?: "link" | "news" | "logout";
+  type?: "link" | "news" | "logout" | "menu-editor"; // 💡 新しいタイプを追加
   children?: MenuItem[];
+  onClick?: () => void; // 💡 メニューアイテムがクリックされたときのコールバック関数を追加
 };

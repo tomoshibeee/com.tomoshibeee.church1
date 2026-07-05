@@ -10,14 +10,20 @@ type Props = {
   site?: SiteData;
   user?: UserData;
   newsItems: NewsItem[]; // 💡 ドロワーを開く関数ではなく、お知らせデータ自体を受け取るように変更
+  onOpenMenuEditor?: () => void; // 💡 メニュー編集モーダルを開く関数を受け取るように変更
 };
 
 export function MobileNavigation(props: Props) {
-  const { site, user, newsItems } = props;
+  const { site, user, newsItems, onOpenMenuEditor } = props;
 
   if (!site) {
     const menu: MenuItem[] = [
       { label: "お知らせ", type: "news" },
+      {
+        label: "メニュー編集",
+        type: "menu-editor",
+        onClick: onOpenMenuEditor,
+      },
       {
         label: user?.name ?? "",
         icon: user?.avator,

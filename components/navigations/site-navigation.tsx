@@ -5,7 +5,9 @@ import Template from "@/components/templates/template";
 import { SiteData } from "@/types/site";
 import { ImagePickerProvider } from "@/components/image-picker";
 import { MetaModal } from "@/features/meta/components/meta-modal";
+import { MenuModal } from "@/features/menu/components/menu-modal";
 import { MetaData } from "@/types/site-meta";
+import { MenuItem } from "@/types/site-menu";
 import { NewsItem } from "@/features/block/news/types";
 
 type Props = {
@@ -18,7 +20,12 @@ export default function SiteNavigation({
   newsItems,
 }: Props) {
   const [site, setSite] = useState<SiteData>(initialSite);
+  
+  // ⭕️ 各モーダルの開閉状態を個別に管理
   const [isMetaOpen, setIsMetaOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  // ⭕️ 基本情報の保存（ネストのバグを修正）
   const handleSaveMeta = async (updatedMeta: MetaData) => {
     setSite((prevSite) => ({
       ...prevSite,
@@ -27,9 +34,20 @@ export default function SiteNavigation({
         ...updatedMeta,
       },
     }));
+  };
 
-    // ※ 実際のDBへの保存APIなどを叩く場合はここに追記します
-  }; // 💡 引数を (blockId, updatedData) を受け取れるように修正
+  // ⭕️ メニューの保存（関数としてきれいに分離）
+  const handleSaveMenu = async (updatedMenu: MenuItem[]) => {
+    setSite((prevSite) => ({
+      ...prevSite,
+      navigation: {
+        ...prevSite.navigation,
+        menu: updatedMenu,
+      },
+    }));
+  };
+
+  // 💡 ブロックのデータ更新処理
   const handleUpdateBlock = (
     blockId: string,
     updatedData: Record<string, any>,
@@ -38,15 +56,13 @@ export default function SiteNavigation({
       const nextSections = prevSite.layout.sections.map((section) => {
         const nextBlocks = section.blocks.map((block) => {
           if (block.id === blockId) {
-            // 💡 解決策: 元の block 自体の型と構造を維持したまま、
-            // data の中身だけを安全に上書きします
             return {
               ...block,
               data: {
                 ...block.data,
                 ...updatedData,
               },
-            } as typeof block; // 💡 「型は元のままだよ」とキャスト（明示）する
+            } as typeof block;
           }
           return block;
         });
@@ -65,27 +81,35 @@ export default function SiteNavigation({
         },
       };
     });
-
-    // alert("ブロックが更新されました。");
   };
+
   return (
     <>
       <ImagePickerProvider>
-        {/* 💡 site をそのまま流し込むだけでOK。Templateの中で展開する必要もなくなります */}
         <Template
           site={site}
           edit
           newsItems={newsItems}
           onUpdateBlock={handleUpdateBlock}
           onOpenMetaEditor={() => setIsMetaOpen(true)}
+          onOpenMenuEditor={() => setIsMenuOpen(true)} 
         />
       </ImagePickerProvider>
-      {/* モーダル本体 */}
+
+      {/* 基本情報編集モーダル */}
       <MetaModal
         isOpen={isMetaOpen}
         onClose={() => setIsMetaOpen(false)}
         initialData={site.meta}
         onSave={handleSaveMeta}
+      />
+
+      {/* ⭕️ ナビゲーションメニュー編集モーダル */}
+      <MenuModal
+        isOpen={isMenuOpen} // 👈 専用のステートに変更
+        onClose={() => setIsMenuOpen(false)}
+        initialData={site.navigation?.menu ?? []}
+        onSave={handleSaveMenu} // 👈 上で定義した関数をスッキリ指定
       />
     </>
   );
