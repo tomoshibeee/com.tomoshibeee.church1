@@ -1,5 +1,6 @@
-import { ServiceBlockData } from "@/features/block";
+"use client";
 
+import { ServiceBlockData } from "@/features/block";
 import {
   FaArrowRight,
   FaClock,
@@ -13,13 +14,36 @@ const getGridCols = (count: number) => {
   return "grid-cols-1 md:grid-cols-3";
 };
 
+// 💡 Propsに onUpdateBlock を追加
 type Props = ServiceBlockData & {
   edit?: boolean;
+  onUpdateBlock?: (updatedData: ServiceBlockData) => void;
 };
 
 export default function ServiceBlock(props: Props) {
-  const { items } = props;
+  // 💡 props からデータを展開
+  const { items = [], edit = false, onUpdateBlock } = props;
   const gridCols = getGridCols(items.length);
+
+  // ✍️ 特定のアイテムの特定のフィールドを更新するハンドラー
+  const handleItemChange = (
+    id: string,
+    field: keyof (typeof items)[number],
+    value: string,
+  ) => {
+    if (!onUpdateBlock) return;
+
+    // 該当する id のアイテムだけを書き換えた新しい配列を作成
+    const updatedItems = items.map((item) =>
+      item.id === id ? { ...item, [field]: value } : item,
+    );
+
+    // 親コンポーネントへ更新データを通知
+    onUpdateBlock({
+      ...props, // 既存の他のプロパティ（もしあれば）を維持
+      items: updatedItems,
+    });
+  };
 
   return (
     <div className="bg-white px-6 py-14 text-gray-800">
@@ -46,35 +70,93 @@ export default function ServiceBlock(props: Props) {
                 <FaRegCalendarCheck />
               </div>
 
-              <h3 className="text-lg font-bold text-gray-900">{item.title}</h3>
+              {/* 💡 タイトル部分の編集切り替え */}
+              <div className="w-full">
+                {edit ? (
+                  <input
+                    type="text"
+                    value={item.title || ""}
+                    onChange={(e) =>
+                      handleItemChange(item.id, "title", e.target.value)
+                    }
+                    className="w-full bg-white border border-gray-300 rounded px-2 py-1 text-lg font-bold text-gray-900 focus:outline-none focus:border-blue-500"
+                    placeholder="案内名（例：日曜礼拝）"
+                  />
+                ) : (
+                  <h3 className="text-lg font-bold text-gray-900">
+                    {item.title}
+                  </h3>
+                )}
+              </div>
 
               <div className="mt-4 space-y-2 text-sm text-gray-600">
+                {/* 💡 時間部分の編集切り替え */}
                 <div className="flex items-center gap-2">
                   <FaClock className="shrink-0 text-blue-500" />
-                  <span>{item.time}</span>
+                  {edit ? (
+                    <input
+                      type="text"
+                      value={item.time || ""}
+                      onChange={(e) =>
+                        handleItemChange(item.id, "time", e.target.value)
+                      }
+                      className="w-full bg-white border border-gray-300 rounded px-2 py-0.5 text-sm focus:outline-none focus:border-blue-500"
+                      placeholder="日時（例：毎週日曜 10:30〜）"
+                    />
+                  ) : (
+                    <span>{item.time}</span>
+                  )}
                 </div>
 
+                {/* 💡 場所部分の編集切り替え */}
                 <div className="flex items-center gap-2">
                   <FaLocationDot className="shrink-0 text-blue-500" />
-                  <span>{item.location}</span>
+                  {edit ? (
+                    <input
+                      type="text"
+                      value={item.location || ""}
+                      onChange={(e) =>
+                        handleItemChange(item.id, "location", e.target.value)
+                      }
+                      className="w-full bg-white border border-gray-300 rounded px-2 py-0.5 text-sm focus:outline-none focus:border-blue-500"
+                      placeholder="場所（例：礼拝堂）"
+                    />
+                  ) : (
+                    <span>{item.location}</span>
+                  )}
                 </div>
               </div>
 
-              {item.comment && (
-                <p className="mt-5 flex-1 text-sm leading-7 text-gray-600">
-                  {item.comment}
-                </p>
-              )}
+              {/* 💡 コメント部分の編集切り替え（複数行入力できるよう textarea にしています） */}
+              <div className="mt-5 flex-1 flex flex-col justify-between">
+                {edit ? (
+                  <textarea
+                    value={item.comment || ""}
+                    onChange={(e) =>
+                      handleItemChange(item.id, "comment", e.target.value)
+                    }
+                    className="w-full h-24 bg-white border border-gray-300 rounded px-2 py-1 text-sm leading-7 text-gray-600 focus:outline-none focus:border-blue-500 resize-none"
+                    placeholder="説明文文を入力してください"
+                  />
+                ) : (
+                  item.comment && (
+                    <p className="text-sm leading-7 text-gray-600">
+                      {item.comment}
+                    </p>
+                  )
+                )}
 
-              {item.link && (
-                <a
-                  href={item.link}
-                  className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-blue-600 hover:text-blue-700"
-                >
-                  詳しく見る
-                  <FaArrowRight className="text-xs" />
-                </a>
-              )}
+                {/* 💡 リンク部分の表示（編集モード時は入力フィールドとの重複や誤クリック防止のため非表示にするか、もしくはそのまま表示） */}
+                {!edit && item.link && (
+                  <a
+                    href={item.link}
+                    className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-blue-600 hover:text-blue-700"
+                  >
+                    詳しく見る
+                    <FaArrowRight className="text-xs" />
+                  </a>
+                )}
+              </div>
             </article>
           ))}
         </div>
