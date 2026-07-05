@@ -20,7 +20,7 @@ export default function SiteNavigation({
   newsItems,
 }: Props) {
   const [site, setSite] = useState<SiteData>(initialSite);
-  
+
   // ⭕️ 各モーダルの開閉状態を個別に管理
   const [isMetaOpen, setIsMetaOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -41,10 +41,12 @@ export default function SiteNavigation({
     setSite((prevSite) => ({
       ...prevSite,
       navigation: {
-        ...prevSite.navigation,
-        menu: updatedMenu,
+        ...prevSite.navigation, // navigationオブジェクトの他の設定（あれば）を維持
+        menu: updatedMenu, // 👈 ここで最新のメニュー配列に丸ごと差し替える！
       },
     }));
+
+    // ※ 将来的にDBへ保存するAPIを叩く場合はここに追記します
   };
 
   // 💡 ブロックのデータ更新処理
@@ -92,7 +94,7 @@ export default function SiteNavigation({
           newsItems={newsItems}
           onUpdateBlock={handleUpdateBlock}
           onOpenMetaEditor={() => setIsMetaOpen(true)}
-          onOpenMenuEditor={() => setIsMenuOpen(true)} 
+          onOpenMenuEditor={() => setIsMenuOpen(true)}
         />
       </ImagePickerProvider>
 

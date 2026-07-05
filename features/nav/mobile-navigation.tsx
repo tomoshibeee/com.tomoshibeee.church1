@@ -24,7 +24,6 @@ export function MobileNavigation(props: Props) {
   if (!site) {
     const defaultMenu: MenuItem[] = [
       { label: "お知らせ", type: "news" },
-      // 💡 もしDropDownMenuやHamburgerMenu側がonClickを受け取れる作りならこれで動きます
       ...(onOpenMenuEditor
         ? [
             {
@@ -51,19 +50,11 @@ export function MobileNavigation(props: Props) {
   // パターンB: 通常時（/dashboard/[site_id] も含む、site がある状態）
   // ----------------------------------------------------
 
-  // ⭕️ 既存の公開サイトメニューのコピーを作る
-  const displayMenu = [...(site.navigation?.menu ?? [])];
+  // ⭕️ 公開サイトの純粋なメニュー配列をそのまま使う
+  const displayMenu = site.navigation?.menu ?? [];
 
-  // ⭕️ もしダッシュボード（onOpenMenuEditorが存在する）なら、ハンバーガーメニューの中に「メニュー編集」項目を動的に追加！
-  // ※ もしHamburgerMenuの中身をクリックした時にonClickが発火しない仕様の場合は、
-  // 下の JSX の HamburgerMenu の横に直接 <button> を置く形に切り替えてください
-  if (onOpenMenuEditor) {
-    displayMenu.push({
-      label: "メニュー編集 ⚙️",
-      type: "link", // 型定義に合わせて調整してください
-      // onClick: onOpenMenuEditor, // 💡 ハンバーガー側がonClick対応ならこれを開通させる
-    });
-  }
+  // ✂️ 【削除】if (onOpenMenuEditor) { displayMenu.push(...) } の処理を完全に撤去！
+  // これにより、ハンバーガーメニューの末尾に「メニュー編集 ⚙️」が勝手に付くのを防ぎます。
 
   const sortedSocialLinks = [...(site?.socialLinks ?? [])].sort(
     (a, b) => a.display_order - b.display_order,
@@ -85,7 +76,7 @@ export function MobileNavigation(props: Props) {
       {/* 共有ボタン */}
       <ShareButtonHeader />
 
-      {/* ⭕️ 解決策：ハンバーガーメニューの左隣に、直生で「メニュー編集」のギアボタンを置く！ */}
+      {/* ⭕️ メニュー編集はこの直生の「⚙️」ボタンだけでスマートに担当！ */}
       {onOpenMenuEditor && (
         <button
           type="button"
@@ -97,8 +88,12 @@ export function MobileNavigation(props: Props) {
         </button>
       )}
 
-      {/* ハンバーガーメニュー（site.navigation.menu の純粋な公開メニューだけを渡す） */}
-      <HamburgerMenu menu={site.navigation?.menu ?? []} newsItems={newsItems} />
+      {/* ハンバーガーメニュー（純粋なサイトメニューだけが渡り、かつリアルタイムに更新される） */}
+      <HamburgerMenu
+        key={JSON.stringify(displayMenu)}
+        menu={displayMenu}
+        newsItems={newsItems}
+      />
     </nav>
   );
 }

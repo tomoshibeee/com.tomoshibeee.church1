@@ -62,7 +62,11 @@ export function PrimaryNavigation(props: Props) {
 
   return (
     <nav className="hidden h-full md:flex items-center gap-4">
-      <DropDownMenu menu={displayMenu} newsItems={newsItems} />
+      <DropDownMenu
+        key={JSON.stringify(displayMenu)} // 👈 これを追加！
+        menu={displayMenu}
+        newsItems={newsItems}
+      />
 
       <div className="h-4 w-px bg-slate-200" />
 
