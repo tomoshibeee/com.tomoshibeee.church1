@@ -4,9 +4,8 @@ import Image from "next/image";
 import { FaQuoteLeft, FaCamera } from "react-icons/fa6";
 
 import { GreetingBlockData } from "@/features/block";
-import { useImagePicker } from "@/components/image-picker"; // 💡 フックのインポート
+import { useImagePicker } from "@/components/image-picker";
 
-// 💡 Propsの型から不要な openPicker を削除してスッキリ
 type Props = GreetingBlockData & {
   edit?: boolean;
   onUpdateBlock?: (updatedData: GreetingBlockData) => void;
@@ -16,7 +15,6 @@ export default function GreetingBlock(props: Props) {
   const data = props;
   const { edit = false, onUpdateBlock } = props;
 
-  // 💡 フックからピッカー関数を取得（変数名の衝突を避けるため型定義と合わせる）
   const { openPicker } = useImagePicker();
 
   // ✍️ テキストフィールドを更新する共通ハンドラー
@@ -29,7 +27,6 @@ export default function GreetingBlock(props: Props) {
 
   // 🖼️ 画像変更用のハンドラー
   const handleImageEditClick = () => {
-    // openPicker がフックから正常に取得できているかチェック
     if (!openPicker || !onUpdateBlock) {
       console.warn("Picker or onUpdateBlock is not available");
       return;
@@ -51,8 +48,8 @@ export default function GreetingBlock(props: Props) {
         {/* 左側：プロフィールカードエリア */}
         <div className="rounded-lg bg-slate-50 p-6 shadow-sm">
           <div className="flex flex-col items-center text-center">
-            {/* 📸 アバター画像コンテナ（hover時にボタンを浮かせる） */}
-            <div className="relative h-36 w-36 overflow-hidden rounded-full ring-4 ring-white bg-gray-200 group">
+            {/* 📸 アバター画像コンテナ（edit時は常時マスクを表示） */}
+            <div className="relative h-36 w-36 overflow-hidden rounded-full ring-4 ring-white bg-gray-200">
               {data.image && (
                 <Image
                   src={data.image}
@@ -63,12 +60,12 @@ export default function GreetingBlock(props: Props) {
                 />
               )}
 
-              {/* 編集モード時のみカメラボタンを表示 */}
+              {/* 📸 編集モード時：常に画像の上に重ねるカメラボタン */}
               {edit && (
                 <button
                   type="button"
                   onClick={handleImageEditClick}
-                  className="absolute inset-0 flex flex-col items-center justify-center bg-black/40 text-white opacity-0 transition group-hover:opacity-100 cursor-pointer"
+                  className="absolute inset-0 flex flex-col items-center justify-center bg-black/40 text-white transition hover:bg-black/50 cursor-pointer"
                   aria-label="プロフィール画像を変更"
                 >
                   <FaCamera className="text-xl" />
