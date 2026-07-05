@@ -1,4 +1,3 @@
-// src/components/features/block/hero-block-carousel.tsx
 "use client";
 
 import Image from "next/image";
@@ -21,7 +20,7 @@ export default function HeroBlockCarousel(props: Props) {
   const INTERVAL = 3000;
   const DURATION = 700;
 
-  const { images = [] } = data;
+  const { title, message, images = [] } = data;
   const extended = images.length > 0 ? [...images, images[0]] : [];
 
   const [index, setIndex] = useState(0);
@@ -30,13 +29,13 @@ export default function HeroBlockCarousel(props: Props) {
   // 💡 4. 共通のリモコン（openPicker）を取り出す
   const { openPicker } = useImagePicker();
 
-  // 💡 5. カメラボタンが押された時の「既存の配列に画像を追加する」処理を定義
+  // 🖼️ 5. カメラボタンが押された時の「既存の配列に画像を追加する」処理を定義
   const handleImageEditClick = () => {
     openPicker((newUrl: string) => {
       // 既存のimagesの末尾に、新しく選んだ画像のオブジェクトを追加した配列を作る
       const updatedImages = [
         ...images,
-        { url: newUrl, alt: data.title || "Slide Image" },
+        { url: newUrl, alt: title || "Slide Image" },
       ];
 
       // 親コンポーネント（EditPageContainerなど）へ更新データを届ける
@@ -44,6 +43,14 @@ export default function HeroBlockCarousel(props: Props) {
         ...data,
         images: updatedImages,
       });
+    });
+  };
+
+  // ✍️ タイトル変更用（SingleImageの実装を移植）
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onUpdateBlock({
+      ...data,
+      title: e.target.value,
     });
   };
 
@@ -78,7 +85,9 @@ export default function HeroBlockCarousel(props: Props) {
     };
   }, [index, images.length]);
 
-  // 画像が1枚もない場合の初期表示（Welcome表示）
+  // ----------------------------------------------------
+  // パターンA: 画像が1枚もない場合の初期表示（Welcome表示）
+  // ----------------------------------------------------
   if (images.length === 0) {
     return (
       <div className="relative flex min-h-[86svh] items-center justify-center bg-slate-900 px-6 text-center text-white">
@@ -91,14 +100,29 @@ export default function HeroBlockCarousel(props: Props) {
             />
           </div>
         )}
-        <div className="max-w-4xl">
+        <div className="w-full max-w-4xl">
           <p className="text-sm font-semibold text-blue-100">Welcome</p>
-          <h1 className="mt-4 text-4xl font-bold leading-tight md:text-6xl">
-            {data.title}
-          </h1>
-          {data.message && (
+          
+          {/* 💡 タイトル編集・表示エリア */}
+          <div className="mt-4">
+            {edit ? (
+              <input
+                type="text"
+                value={title || ""}
+                onChange={handleTitleChange}
+                className="w-full bg-transparent border-b border-dashed border-white/50 text-center text-4xl font-bold leading-tight md:text-6xl focus:outline-none focus:border-white py-2"
+                placeholder="タイトルを入力"
+              />
+            ) : (
+              <h1 className="text-4xl font-bold leading-tight md:text-6xl">
+                {title}
+              </h1>
+            )}
+          </div>
+
+          {message && (
             <p className="mt-5 text-base leading-8 text-white/85 md:text-lg">
-              {data.message}
+              {message}
             </p>
           )}
         </div>
@@ -106,6 +130,9 @@ export default function HeroBlockCarousel(props: Props) {
     );
   }
 
+  // ----------------------------------------------------
+  // パターンB: 画像がある場合（通常のカルーセル表示）
+  // ----------------------------------------------------
   return (
     <div className="relative min-h-[86svh] overflow-hidden bg-slate-900 text-white">
       {/* カメラボタン */}
@@ -119,6 +146,7 @@ export default function HeroBlockCarousel(props: Props) {
         </div>
       )}
 
+      {/* スライダー本体 */}
       <div
         className={`flex min-h-[86svh] ${
           transition ? "transition-transform duration-700" : ""
@@ -141,22 +169,40 @@ export default function HeroBlockCarousel(props: Props) {
         ))}
       </div>
 
+      {/* オーバーレイ（背景を暗くして文字を見やすくするレイヤー） */}
       <div className="absolute inset-0 bg-black/45" />
       <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-black/20" />
 
+      {/* コンテンツエリア */}
       <div className="absolute inset-0 z-10 flex items-center justify-center px-6 pb-28 pt-24 text-center">
-        <div className="max-w-4xl">
-          <h1 className="mt-4 text-4xl font-bold leading-tight md:text-6xl">
-            {data.title}
-          </h1>
-          {data.message && (
+        <div className="w-full max-w-4xl">
+          
+          {/* 💡 タイトル編集・表示エリア */}
+          <div className="mt-4">
+            {edit ? (
+              <input
+                type="text"
+                value={title || ""}
+                onChange={handleTitleChange}
+                className="w-full bg-transparent border-b border-dashed border-white/50 text-center text-4xl font-bold leading-tight md:text-6xl focus:outline-none focus:border-white py-2"
+                placeholder="タイトルを入力"
+              />
+            ) : (
+              <h1 className="text-4xl font-bold leading-tight md:text-6xl">
+                {title}
+              </h1>
+            )}
+          </div>
+
+          {message && (
             <p className="mt-5 text-base leading-8 text-white/85 md:text-lg">
-              {data.message}
+              {message}
             </p>
           )}
         </div>
       </div>
 
+      {/* インジケーター（ドット） */}
       <div className="absolute bottom-28 z-10 flex w-full justify-center gap-2">
         {images.map((_, i) => (
           <button
