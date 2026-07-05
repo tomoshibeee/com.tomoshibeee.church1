@@ -7,9 +7,11 @@ import BlockRenderer from "@/features/block/block-renderer";
 type Props = {
   section: SectionData;
   meta: MetaData;
-  onUpdateBlock: () => void;
+  // 💡 型を引数ありに変更
+  onUpdateBlock: (blockId: string, updatedData: Record<string, any>) => void;
   edit?: boolean;
 };
+
 export default function BaseSection(props: Props) {
   const { section, meta, edit, onUpdateBlock } = props;
   if (!section) return null;
@@ -20,7 +22,7 @@ export default function BaseSection(props: Props) {
           key={block.id ?? `${block.type}-${i}`}
           meta={meta}
           block={block}
-          onUpdateBlock={onUpdateBlock}
+          onUpdateBlock={onUpdateBlock} // 💡 そのまま下へバケツリレー
           edit={edit}
         />
       ))}

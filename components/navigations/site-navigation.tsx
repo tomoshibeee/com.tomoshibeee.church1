@@ -16,15 +16,44 @@ export default function SiteNavigation({
   newsItems,
 }: Props) {
   const [site, setSite] = useState<SiteData>(initialSite);
-  const handleUpdateBlock = () => {
-    // ここでサイトデータを更新する処理を実装する
-    // 例えば、APIを呼び出してデータを保存し、最新のサイトデータを取得するなど
-    // ここでは仮にsetSiteで更新する例を示す
-    setSite((prevSite) => ({
-      ...prevSite,
-      // 必要に応じて更新内容を反映させる
-    }));
-    alert("ブロックが更新されました。"); // 確認用のアラート
+  // 💡 引数を (blockId, updatedData) を受け取れるように修正
+  const handleUpdateBlock = (
+    blockId: string,
+    updatedData: Record<string, any>,
+  ) => {
+    setSite((prevSite) => {
+      const nextSections = prevSite.layout.sections.map((section) => {
+        const nextBlocks = section.blocks.map((block) => {
+          if (block.id === blockId) {
+            // 💡 解決策: 元の block 自体の型と構造を維持したまま、
+            // data の中身だけを安全に上書きします
+            return {
+              ...block,
+              data: {
+                ...block.data,
+                ...updatedData,
+              },
+            } as typeof block; // 💡 「型は元のままだよ」とキャスト（明示）する
+          }
+          return block;
+        });
+
+        return {
+          ...section,
+          blocks: nextBlocks,
+        };
+      });
+
+      return {
+        ...prevSite,
+        layout: {
+          ...prevSite.layout,
+          sections: nextSections,
+        },
+      };
+    });
+
+    alert("ブロックが更新されました。");
   };
   return (
     <ImagePickerProvider>

@@ -24,50 +24,50 @@ import {
 interface Props {
   meta: MetaData;
   block: Block;
-  onUpdateBlock: () => void;
+  onUpdateBlock: (blockId: string, updatedData: Record<string, any>) => void;
   edit?: boolean;
 }
 type BlockRendererMap = {
   hero: (
     block: HeroBlockType,
     meta: MetaData,
-    onUpdateBlock: () => void,
+    onUpdateBlock: (updatedData: Record<string, any>) => void,
     edit?: boolean,
   ) => JSX.Element;
   news: (
     block: NewsBlockType,
     meta: MetaData,
-    onUpdateBlock: () => void,
+    onUpdateBlock: (updatedData: Record<string, any>) => void,
     edit?: boolean,
   ) => JSX.Element;
   greeting: (
     block: GreetingBlockType,
     meta: MetaData,
-    onUpdateBlock: () => void,
+    onUpdateBlock: (updatedData: Record<string, any>) => void,
     edit?: boolean,
   ) => JSX.Element;
   access: (
     block: AccessBlockType,
     meta: MetaData,
-    onUpdateBlock: () => void,
+    onUpdateBlock: (updatedData: Record<string, any>) => void,
     edit?: boolean,
   ) => JSX.Element;
   cta: (
     block: CtaBlockType,
     meta: MetaData,
-    onUpdateBlock: () => void,
+    onUpdateBlock: (updatedData: Record<string, any>) => void,
     edit?: boolean,
   ) => JSX.Element;
   contact: (
     block: ContactBlockType,
     meta: MetaData,
-    onUpdateBlock: () => void,
+    onUpdateBlock: (updatedData: Record<string, any>) => void,
     edit?: boolean,
   ) => JSX.Element;
   service: (
     block: ServiceBlockType,
     meta: MetaData,
-    onUpdateBlock: () => void,
+    onUpdateBlock: (updatedData: Record<string, any>) => void,
     edit?: boolean,
   ) => JSX.Element;
 };
@@ -112,7 +112,7 @@ const blockRegistry: BlockRendererMap = {
     // if (block.type !== "access") return {} as JSX.Element;
     if (!meta) throw new Error("meta missing");
     // if (!meta.slug) throw new Error("slug missing");
-    return <AccessBlock {...meta} edit={edit}/>;
+    return <AccessBlock {...meta} edit={edit} />;
   },
 
   cta: (block, _meta, _onOpenImageUploader, edit) => {
@@ -127,7 +127,13 @@ export default function BlockRenderer(props: Props) {
 
   if (!render) return null;
 
-  const content = render(block as any, meta, onUpdateBlock, edit);
+  const handleUpdateFields = (updatedData: Record<string, any>) => {
+    if (block.id) {
+      onUpdateBlock(block.id, updatedData);
+    }
+  };
+
+  const content = render(block as any, meta, handleUpdateFields, edit);
 
   return <div>{content}</div>;
 }

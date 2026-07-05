@@ -10,8 +10,9 @@ import { NewsItem } from "@/features/block/news/types";
 type Props = {
   site: SiteData;
   edit?: boolean;
-  newsItems: NewsItem[]; // 💡 ドロワーを開く関数ではなく、お知らせデータ自体を受け取るように変更
-  onUpdateBlock?: () => void;
+  newsItems: NewsItem[];
+  // 💡 型を引数ありに変更
+  onUpdateBlock?: (blockId: string, updatedData: Record<string, any>) => void;
 };
 
 export default function Template(props: Props) {
@@ -28,6 +29,7 @@ export default function Template(props: Props) {
           meta={site.meta}
           section={{ ...section }}
           edit={edit}
+          // 💡 空の関数にも型を合わせておく
           onUpdateBlock={onUpdateBlock ?? (() => {})}
         />
       ))}
