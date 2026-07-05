@@ -1,3 +1,5 @@
+"use client";
+
 import { DropDownMenu } from "../menu/drop-down-menu";
 import { LinkButtonHeader } from "@/components/buttons/link-button";
 import { ShareButtonHeader } from "@/components/buttons/share-button";
@@ -16,14 +18,13 @@ type Props = {
 export function PrimaryNavigation(props: Props) {
   const { site, user, newsItems, onOpenMenuEditor } = props;
 
+  // ----------------------------------------------------
+  // パターンA: 完全に初期状態などで site すらない場合のフォールバック（ダッシュボードはここを通っている）
+  // ----------------------------------------------------
   if (!site) {
-    const menu: MenuItem[] = [
+    const defaultMenu: MenuItem[] = [
       { label: "お知らせ", type: "news" },
-      {
-        label: "メニュー編集",
-        type: "menu-editor",
-        onClick: onOpenMenuEditor,
-      },
+      // 💡 DropDownMenu の中から「メニュー編集」を削除します（動かない・見えない原因になるため）
       {
         label: user?.name ?? "",
         icon: user?.avator,
@@ -31,11 +32,28 @@ export function PrimaryNavigation(props: Props) {
       },
     ];
     return (
-      <nav className="hidden h-full md:flex items-center gap-6">
-        <DropDownMenu menu={menu} newsItems={newsItems} />
+      <nav className="hidden h-full md:flex items-center gap-4">
+        {" "}
+        {/* gapを4に統一 */}
+        <DropDownMenu menu={defaultMenu} newsItems={newsItems} />
+        {/* ⭕️ 解決策：DropDownMenu の外側に直接ボタンを配置する！ */}
+        {onOpenMenuEditor && (
+          <button
+            type="button"
+            onClick={onOpenMenuEditor}
+            className="ml-2 rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-bold text-blue-600 hover:bg-blue-100 transition-colors cursor-pointer"
+          >
+            メニュー編集 ⚙️
+          </button>
+        )}
       </nav>
     );
   }
+
+  // ----------------------------------------------------
+  // パターンB: 通常時（site がある状態）
+  // ----------------------------------------------------
+  const displayMenu = [...(site.navigation?.menu ?? [])];
 
   const sortedSocialLinks = [...(site.socialLinks ?? [])].sort(
     (a, b) => a.display_order - b.display_order,
@@ -43,11 +61,9 @@ export function PrimaryNavigation(props: Props) {
   const headerSocialLinks = sortedSocialLinks.slice(0, 2);
 
   return (
-    // 💡 gap-4 で全体を程よい間隔に。無駄な pl-2 などを徹底排除して等間隔化！
     <nav className="hidden h-full md:flex items-center gap-4">
-      <DropDownMenu menu={site.navigation?.menu ?? []} newsItems={newsItems} />
+      <DropDownMenu menu={displayMenu} newsItems={newsItems} />
 
-      {/* 📐 仕切り線をほんの少しマイルドなslate-200に */}
       <div className="h-4 w-px bg-slate-200" />
 
       <div className="flex items-center gap-1.5">
@@ -59,6 +75,17 @@ export function PrimaryNavigation(props: Props) {
       <div className="h-4 w-px bg-slate-200" />
 
       <ShareButtonHeader />
+
+      {/* ⭕️ 通常ルートのときも、同じように外側にボタンを配置する */}
+      {onOpenMenuEditor && (
+        <button
+          type="button"
+          onClick={onOpenMenuEditor}
+          className="ml-2 rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-bold text-blue-600 hover:bg-blue-100 transition-colors cursor-pointer"
+        >
+          メニュー編集 ⚙️
+        </button>
+      )}
     </nav>
   );
 }

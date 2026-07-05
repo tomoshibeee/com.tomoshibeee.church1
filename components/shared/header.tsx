@@ -31,8 +31,8 @@ export default function Header(props: Props) {
     return (
       <header className={baseClass}>
         <Logo />
-        <PrimaryNavigation newsItems={newsItems} onOpenMenuEditor={onOpenMenuEditor} />
-        <MobileNavigation newsItems={newsItems} onOpenMenuEditor={onOpenMenuEditor} />
+        <PrimaryNavigation newsItems={newsItems} />
+        <MobileNavigation newsItems={newsItems} />
       </header>
     );
   }
@@ -40,8 +40,18 @@ export default function Header(props: Props) {
     return (
       <header className={baseClass}>
         <Logo />
-        <PrimaryNavigation user={user} site={site} newsItems={newsItems} />
-        <MobileNavigation user={user} site={site} newsItems={newsItems} />
+        <PrimaryNavigation
+          user={user}
+          site={site}
+          newsItems={newsItems}
+          onOpenMenuEditor={onOpenMenuEditor}
+        />
+        <MobileNavigation
+          user={user}
+          site={site}
+          newsItems={newsItems}
+          onOpenMenuEditor={onOpenMenuEditor}
+        />
       </header>
     );
   }
@@ -51,8 +61,16 @@ export default function Header(props: Props) {
       {site && (
         <>
           <Logo site={site} />
-          <PrimaryNavigation site={site} newsItems={newsItems} />
-          <MobileNavigation site={site} newsItems={newsItems} />
+          <PrimaryNavigation
+            site={site}
+            newsItems={newsItems}
+            onOpenMenuEditor={onOpenMenuEditor}
+          />
+          <MobileNavigation
+            site={site}
+            newsItems={newsItems}
+            onOpenMenuEditor={onOpenMenuEditor}
+          />
         </>
       )}
     </header>
