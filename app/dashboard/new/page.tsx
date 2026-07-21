@@ -1,11 +1,15 @@
 // app/dashboard/new/page.tsx
 "use client";
 
+import { useRouter } from "next/navigation";
+
 import { useState } from "react";
 
 export default function NewSitePage() {
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
+
+  const router = useRouter();
 
   return (
     <div style={{ padding: 24 }}>
@@ -29,7 +33,8 @@ export default function NewSitePage() {
         <button
           className="bg-black text-white p-2 rounded"
           onClick={() => {
-            alert(`name: ${name}, slug: ${slug}`);
+            router.push("/dashboard");
+            // alert(`name: ${name}, slug: ${slug}`);
           }}
         >
           Create
