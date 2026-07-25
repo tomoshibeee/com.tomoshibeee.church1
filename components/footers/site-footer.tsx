@@ -1,6 +1,7 @@
 // components/footers/SiteFooter.tsx
 "use client";
 
+import Link from "next/link";
 import { LinkButtonFooter } from "@/components/buttons/link-button";
 import { ShareButtonFooter } from "../buttons/share-button";
 import { SiteSocialLink } from "@/models/site-social-link";
@@ -125,7 +126,6 @@ export default function SiteFooter({ site, edit = false }: SiteFooterProps) {
           </ul>
         </div>
       </div>
-
       {/* Bottom */}
       <div className="mx-auto mt-12 flex max-w-5xl flex-col gap-3 border-t border-white/10 py-6 text-slate-500 md:flex-row md:items-center md:justify-between">
         <p>
@@ -141,16 +141,21 @@ export default function SiteFooter({ site, edit = false }: SiteFooterProps) {
           </a>
         </div>
       </div>
-
       {/* Control Panel */}
       {edit && (
-        <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t flex gap-4 shadow-lg z-50">
-          <button className="w-1/2 py-2 border rounded text-slate-700 hover:bg-slate-50 transition">
+        <div className="fixed bottom-0 inset-x-0 z-50 flex items-center justify-between gap-4 border-t bg-white p-4 shadow-lg">
+          <Link
+            href={`/dashboard/${site.meta.site_id}/preview`}
+            className="flex-1 rounded-md border border-slate-300 py-2.5 text-center text-sm font-medium text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-400"
+          >
             プレビュー
-          </button>
-          <button className="w-1/2 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition font-medium">
+          </Link>
+          <Link
+            href={`/dashboard/${site.meta.site_id}/save`}
+            className="flex-1 rounded-md bg-blue-600 py-2.5 text-center text-sm font-medium text-white transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          >
             保存
-          </button>
+          </Link>
         </div>
       )}
     </footer>
