@@ -49,10 +49,5 @@ export function ImagePickerProvider({ children }: { children: ReactNode }) {
 
 export function useImagePicker() {
   const context = useContext(ImagePickerContext);
-  if (!context) {
-    throw new Error(
-      "useImagePicker must be used within an ImagePickerProvider",
-    );
-  }
-  return context;
+  return context ?? null;
 }

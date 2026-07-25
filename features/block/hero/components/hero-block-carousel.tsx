@@ -27,10 +27,13 @@ export default function HeroBlockCarousel(props: Props) {
   const [transition, setTransition] = useState(true);
 
   // 💡 4. 共通のリモコン（openPicker）を取り出す
-  const { openPicker } = useImagePicker();
+  const picker = useImagePicker();
+  const openPicker = picker?.openPicker;
 
   // 🖼️ 5. カメラボタンが押された時の「既存の配列に画像を追加する」処理を定義
   const handleImageEditClick = () => {
+    if (!edit || !openPicker || !onUpdateBlock) return;
+
     openPicker((newUrl: string) => {
       // 既存のimagesの末尾に、新しく選んだ画像のオブジェクトを追加した配列を作る
       const updatedImages = [
@@ -102,7 +105,7 @@ export default function HeroBlockCarousel(props: Props) {
         )}
         <div className="w-full max-w-4xl">
           <p className="text-sm font-semibold text-blue-100">Welcome</p>
-          
+
           {/* 💡 タイトル編集・表示エリア */}
           <div className="mt-4">
             {edit ? (
@@ -176,7 +179,6 @@ export default function HeroBlockCarousel(props: Props) {
       {/* コンテンツエリア */}
       <div className="absolute inset-0 z-10 flex items-center justify-center px-6 pb-28 pt-24 text-center">
         <div className="w-full max-w-4xl">
-          
           {/* 💡 タイトル編集・表示エリア */}
           <div className="mt-4">
             {edit ? (

@@ -17,10 +17,12 @@ export default function HeroBlockSingleImage(props: Props) {
   const { title, message, images = [] } = data;
   const image = images?.[0];
 
-  const { openPicker } = useImagePicker();
+  const picker = useImagePicker();
+  const openPicker = picker?.openPicker;
 
   // 🖼️ 画像変更用
   const handleImageEditClick = () => {
+    if (!edit || !openPicker || !onUpdateBlock) return;
     openPicker((newUrl: string) => {
       const updatedImages = [{ url: newUrl, alt: title || "Hero Image" }];
       onUpdateBlock({
@@ -34,7 +36,7 @@ export default function HeroBlockSingleImage(props: Props) {
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onUpdateBlock({
       ...data,
-      title: e.target.value, 
+      title: e.target.value,
     });
   };
 
@@ -62,9 +64,8 @@ export default function HeroBlockSingleImage(props: Props) {
       )}
       <div className="absolute inset-0 bg-black/45" />
       <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-black/20" />
-      
+
       <div className="relative z-10 mx-auto flex min-h-[86svh] max-w-5xl flex-col items-center justify-center pb-28 pt-24 text-center">
-        
         {/* 💡 タイトル部分を修正 */}
         <div className="w-full max-w-4xl mt-4">
           {edit ? (

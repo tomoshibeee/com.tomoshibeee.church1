@@ -15,10 +15,12 @@ export default function GreetingBlock(props: Props) {
   const data = props;
   const { edit = false, onUpdateBlock } = props;
 
-  const { openPicker } = useImagePicker();
+  const picker = useImagePicker();
+  const openPicker = picker?.openPicker;
 
   // ✍️ テキストフィールドを更新する共通ハンドラー
   const handleChange = (field: keyof GreetingBlockData, value: string) => {
+    if (!edit || !onUpdateBlock) return;
     onUpdateBlock?.({
       ...data,
       [field]: value,
