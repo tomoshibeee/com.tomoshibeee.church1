@@ -1,50 +1,49 @@
 "use client";
 
-import { useEffect, useState, use } from "react";
+import { use, useSyncExternalStore } from "react";
 import Template from "@/components/templates/template";
+
+function subscribe(callback: () => void) {
+  window.addEventListener("storage", callback);
+  window.addEventListener("local-storage-update", callback);
+  return () => {
+    window.removeEventListener("storage", callback);
+    window.removeEventListener("local-storage-update", callback);
+  };
+}
 
 export default function PreviewPage({
   params,
 }: {
-  params: Promise<{ siteId: string }>;
+  params: Promise<{ "site-id": string }>;
 }) {
-  // 1. params をアンラップ（use を使って確実に同期的に扱える状態にする）
-  const { siteId } = use(params);
-  
-  // メモリ上のサイトデータを管理するState（初期値は null）
-  const [siteData, setSiteData] = useState<any>(null);
-  // 読み込み中かどうかを管理するフラグ
-  const [isLoading, setIsLoading] = useState(true);
+  const resolvedParams = use(params);
+  const siteId = resolvedParams["site-id"];
 
-  useEffect(() => {
-    if (!siteId) return;
+  // 1. useSyncExternalStore で初期値と更新イベントを監視
+  const siteDataRaw = useSyncExternalStore(
+    subscribe,
+    // クライアント側（ブラウザ）で常に最新の localStorage 値を取得
+    () => {
+      if (typeof window === "undefined" || !siteId) return null;
+      return localStorage.getItem(`preview-${siteId}`);
+    },
+    // サーバーサイド（SSR）初期値
+    () => null
+  );
 
-    // 2. localStorage からデータを復元
-    const savedData = localStorage.getItem(`preview-${siteId}`);
-    if (savedData) {
-      setSiteData(JSON.parse(savedData));
-    }
-    setIsLoading(false); // 読み込み完了
+  // 2. パース処理
+  const siteData = siteDataRaw ? JSON.parse(siteDataRaw) : null;
 
-    // 3. 編集画面側からのリアルタイム更新を検知するリスナー
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === `preview-${siteId}` && e.newValue) {
-        setSiteData(JSON.parse(e.newValue));
-      }
-    };
-    window.addEventListener("storage", handleStorageChange);
-    return () => window.removeEventListener("storage", handleStorageChange);
-  }, [siteId]);
-
-  // ⚠️ 重要：データが準備できるまでは、絶対に後ろのコンポーネント（Templateなど）を動かさない！
-  if (isLoading || !siteData) {
+  // 3. ローディング表示
+  if (!siteData) {
     return (
-      <div style={{ padding: "20px", fontFamily: "sans-serif" }}>
-        編集データを読み込み中...
+      <div className="p-8 font-sans text-slate-700">
+        <p className="font-bold">編集データを読み込み中...</p>
       </div>
     );
   }
 
-  // ここに到達した時点では、絶対に siteData（の中にsiteIdなどが入っている）が存在する
+  // 4. テンプレート描画
   return <Template site={siteData} edit={false} newsItems={[]} />;
 }

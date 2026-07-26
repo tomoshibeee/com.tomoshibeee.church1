@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Template from "@/components/templates/template";
 import { SiteData } from "@/types/site";
 import { ImagePickerProvider } from "@/components/image-picker";
@@ -24,6 +24,13 @@ export default function SiteNavigation({
   // ⭕️ 各モーダルの開閉状態を個別に管理
   const [isMetaOpen, setIsMetaOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  // 💡 編集中のサイトデータを localStorage に同期
+  useEffect(() => {
+    if (site?.meta?.site_id) {
+      localStorage.setItem(`preview-${site.meta.site_id}`, JSON.stringify(site));
+    }
+  }, [site]);
 
   // ⭕️ 基本情報の保存（ネストのバグを修正）
   const handleSaveMeta = async (updatedMeta: MetaData) => {
