@@ -5,18 +5,18 @@ import { useEffect, useState } from "react";
 
 import ImageUploader from "@/components/media/image-uploader";
 import { HeroBlockData } from "@/features/block";
-// 💡 1. 共通の画像ピッカーフックをインポート
 import { useImagePicker } from "@/components/image-picker";
+import { SiteMode } from "@/types/site";
 
 type Props = HeroBlockData & {
-  edit?: boolean;
-  onUpdateBlock: (updatedData: HeroBlockData) => void; // 💡 2. 親へ更新を伝える関数を追加
+  mode?: SiteMode;
+  onUpdateBlock: (updatedData: HeroBlockData) => void;
 };
 
 export default function HeroBlockCarousel(props: Props) {
   const data = props;
-  // 💡 3. 古い onOpenImageUploader は受け取らず、onUpdateBlock を受け取る
-  const { edit = false, onUpdateBlock } = props;
+  const { mode = "view", onUpdateBlock } = props;
+  const isEdit = mode === "edit";
   const INTERVAL = 3000;
   const DURATION = 700;
 
@@ -32,7 +32,7 @@ export default function HeroBlockCarousel(props: Props) {
 
   // 🖼️ 5. カメラボタンが押された時の「既存の配列に画像を追加する」処理を定義
   const handleImageEditClick = () => {
-    if (!edit || !openPicker || !onUpdateBlock) return;
+    if (!isEdit || !openPicker || !onUpdateBlock) return;
 
     openPicker((newUrl: string) => {
       // 既存のimagesの末尾に、新しく選んだ画像のオブジェクトを追加した配列を作る
@@ -95,7 +95,7 @@ export default function HeroBlockCarousel(props: Props) {
     return (
       <div className="relative flex min-h-[86svh] items-center justify-center bg-slate-900 px-6 text-center text-white">
         {/* 💡 画像がないときでも編集モードならカメラボタンを出す */}
-        {edit && (
+        {isEdit && (
           <div className="absolute right-4 top-4 z-20">
             <ImageUploader
               data={data}
@@ -108,7 +108,7 @@ export default function HeroBlockCarousel(props: Props) {
 
           {/* 💡 タイトル編集・表示エリア */}
           <div className="mt-4">
-            {edit ? (
+            {isEdit ? (
               <input
                 type="text"
                 value={title || ""}
@@ -139,7 +139,7 @@ export default function HeroBlockCarousel(props: Props) {
   return (
     <div className="relative min-h-[86svh] overflow-hidden bg-slate-900 text-white">
       {/* カメラボタン */}
-      {edit && (
+      {isEdit && (
         <div className="absolute right-4 top-4 z-20">
           {/* 💡 6. 新しいハンドル関数を繋ぎこむ */}
           <ImageUploader
@@ -181,7 +181,7 @@ export default function HeroBlockCarousel(props: Props) {
         <div className="w-full max-w-4xl">
           {/* 💡 タイトル編集・表示エリア */}
           <div className="mt-4">
-            {edit ? (
+            {isEdit ? (
               <input
                 type="text"
                 value={title || ""}

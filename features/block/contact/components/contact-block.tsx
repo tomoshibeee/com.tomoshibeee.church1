@@ -2,12 +2,13 @@ import { FaPhone, FaEnvelope, FaLocationDot } from "react-icons/fa6";
 
 import { ContactBlockData } from "@/features/block";
 import { MetaData } from "@/types/site-meta";
+import { SiteMode } from "@/types/site";
 import ContactForm from "./contact-form";
 
 type Props = ContactBlockData & {
   meta: MetaData;
   onOpenMetaEditor: () => void;
-  edit?: boolean;
+  mode?: SiteMode;
 };
 
 export default function ContactBlock(props: Props) {
@@ -16,7 +17,6 @@ export default function ContactBlock(props: Props) {
     description = "礼拝や集会、見学についてなど、お気軽にお問い合わせください。",
     submitLabel = "メールを作成する",
     meta,
-    edit,
   } = props;
   return (
     <div className="bg-slate-50 px-6 py-14">

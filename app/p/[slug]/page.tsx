@@ -22,5 +22,5 @@ export default async function Page({
   const news = await getGlobalNews();
   const newsItems = toGlobalNewsItems(news);
 
-  return <Template site={site} edit={false} newsItems={newsItems} />;
+  return <Template site={site} mode="view" newsItems={newsItems} />;
 }

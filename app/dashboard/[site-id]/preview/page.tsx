@@ -45,5 +45,5 @@ export default function PreviewPage({
   }
 
   // 4. テンプレート描画
-  return <Template site={siteData} edit={false} newsItems={[]} />;
+  return <Template site={siteData} mode="preview" newsItems={[]} />;
 }

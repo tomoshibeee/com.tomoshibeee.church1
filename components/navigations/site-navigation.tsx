@@ -97,7 +97,7 @@ export default function SiteNavigation({
       <ImagePickerProvider>
         <Template
           site={site}
-          edit
+          mode="edit"
           newsItems={newsItems}
           onUpdateBlock={handleUpdateBlock}
           onOpenMetaEditor={() => setIsMetaOpen(true)}

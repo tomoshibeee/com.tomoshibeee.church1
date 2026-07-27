@@ -5,15 +5,15 @@ import Link from "next/link";
 import { LinkButtonFooter } from "@/components/buttons/link-button";
 import { ShareButtonFooter } from "../buttons/share-button";
 import { SiteSocialLink } from "@/models/site-social-link";
-import { SiteData } from "@/types/site";
+import { SiteData, SiteMode } from "@/types/site";
 import { FaEnvelope, FaLocationDot, FaPhone } from "react-icons/fa6";
 
 type SiteFooterProps = {
   site: SiteData;
-  edit?: boolean;
+  mode?: SiteMode; // デフォルトは "view"
 };
 
-export default function SiteFooter({ site, edit = false }: SiteFooterProps) {
+export default function SiteFooter({ site, mode = "view" }: SiteFooterProps) {
   const sortedSocialLinks = [...(site.socialLinks ?? [])].sort(
     (a, b) => a.display_order - b.display_order,
   );
@@ -142,7 +142,7 @@ export default function SiteFooter({ site, edit = false }: SiteFooterProps) {
         </div>
       </div>
       {/* Control Panel */}
-      {edit && (
+      {mode === "edit" && (
         <div className="fixed bottom-0 inset-x-0 z-50 flex items-center justify-between gap-4 border-t bg-white p-4 shadow-lg">
           <Link
             href={`/dashboard/${site.meta.site_id}/preview`}

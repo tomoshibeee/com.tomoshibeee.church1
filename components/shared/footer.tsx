@@ -2,7 +2,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { SiteData } from "@/types/site";
+import { SiteData, SiteMode } from "@/types/site";
 
 import PortalFooter from "@/components/footers/portal-footer";
 import DashboardFooter from "@/components/footers/dashboard-footer";
@@ -10,10 +10,10 @@ import SiteFooter from "@/components/footers/site-footer";
 
 type Props = {
   site?: SiteData;
-  edit?: boolean;
+  mode?: SiteMode;
 };
 
-export default function Footer({ site, edit = false }: Props) {
+export default function Footer({ site, mode = "view" }: Props) {
   const pathname = usePathname();
 
   const isTop = pathname === "/";
@@ -24,12 +24,12 @@ export default function Footer({ site, edit = false }: Props) {
     return <PortalFooter />;
   }
 
-  // 2. ダッシュボード用フッター (ただし編集・プレビューモードの時はSiteFooterを出す)
-  if (isDashboard && !edit) {
+  // 2. ダッシュボード用フッター（サイトデータがない一覧画面のみ）
+  if (isDashboard && !site) {
     return <DashboardFooter />;
   }
 
   // 3. 一般サイト（公開画面 ＆ 編集画面）用フッター
   if (!site) return null;
-  return <SiteFooter site={site} edit={edit} />;
+  return <SiteFooter site={site} mode={mode} />;
 }

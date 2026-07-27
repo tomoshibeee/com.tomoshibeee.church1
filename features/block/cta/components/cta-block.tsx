@@ -2,16 +2,17 @@
 
 import { FaArrowRight } from "react-icons/fa6";
 import { CtaBlockData } from "@/features/block";
+import { SiteMode } from "@/types/site";
 
-// 💡 共通のProps規格に準拠
 type Props = CtaBlockData & {
-  edit?: boolean;
+  mode?: SiteMode;
   onUpdateBlock?: (updatedData: CtaBlockData) => void;
 };
 
 export default function CtaBlock(props: Props) {
   const data = props;
-  const { buttons = [], edit = false, onUpdateBlock } = props;
+  const { buttons = [], mode = "view", onUpdateBlock } = props;
+  const isEdit = mode === "edit";
 
   // ✍️ 特定のボタンのフィールド（label または href）を更新するハンドラー
   const handleButtonChange = (
@@ -34,15 +35,15 @@ export default function CtaBlock(props: Props) {
   };
 
   // 編集モードでなく、ボタンが0件の場合は非表示
-  if (!edit && buttons.length === 0) return null;
+  if (!isEdit && buttons.length === 0) return null;
 
   return (
     <div className="absolute bottom-10 left-1/2 z-20 w-full -translate-x-1/2 px-6">
       <div className="mx-auto flex max-w-3xl flex-col items-stretch justify-center gap-3 rounded-lg bg-white/90 p-3 shadow-lg backdrop-blur sm:flex-row sm:items-center sm:rounded-full">
         {buttons.map((b, i) => {
           // 💡 編集モード時は a タグの代わりに div を使い、クリックによるページ遷移を防ぐ
-          const Component = edit ? "div" : "a";
-          const hrefProps = edit ? {} : { href: b.href };
+          const Component = isEdit ? "div" : "a";
+          const hrefProps = isEdit ? {} : { href: b.href };
 
           return (
             <Component
@@ -52,9 +53,9 @@ export default function CtaBlock(props: Props) {
                 i === 0
                   ? "bg-blue-600 text-white shadow-sm"
                   : "bg-slate-50 text-gray-800"
-              } ${edit ? "" : i === 0 ? "hover:bg-blue-700" : "hover:bg-blue-50 hover:text-blue-700"}`}
+              } ${isEdit ? "" : i === 0 ? "hover:bg-blue-700" : "hover:bg-blue-50 hover:text-blue-700"}`}
             >
-              {edit ? (
+              {isEdit ? (
                 // 🛠️ 編集モード：テキスト入力とリンク入力をコンパクトに配置
                 <div className="flex w-full flex-col gap-1 text-xs">
                   <input

@@ -1,6 +1,7 @@
 "use client";
 
 import { ServiceBlockData } from "@/features/block";
+import { SiteMode } from "@/types/site";
 import {
   FaArrowRight,
   FaClock,
@@ -16,13 +17,13 @@ const getGridCols = (count: number) => {
 
 // 💡 Propsに onUpdateBlock を追加
 type Props = ServiceBlockData & {
-  edit?: boolean;
+  mode?: SiteMode;
   onUpdateBlock?: (updatedData: ServiceBlockData) => void;
 };
 
 export default function ServiceBlock(props: Props) {
-  // 💡 props からデータを展開
-  const { items = [], edit = false, onUpdateBlock } = props;
+  const { items = [], mode = "view", onUpdateBlock } = props;
+  const isEdit = mode === "edit";
   const gridCols = getGridCols(items.length);
 
   // ✍️ 特定のアイテムの特定のフィールドを更新するハンドラー
@@ -72,7 +73,7 @@ export default function ServiceBlock(props: Props) {
 
               {/* 💡 タイトル部分の編集切り替え */}
               <div className="w-full">
-                {edit ? (
+                {isEdit ? (
                   <input
                     type="text"
                     value={item.title || ""}
@@ -93,7 +94,7 @@ export default function ServiceBlock(props: Props) {
                 {/* 💡 時間部分の編集切り替え */}
                 <div className="flex items-center gap-2">
                   <FaClock className="shrink-0 text-blue-500" />
-                  {edit ? (
+                  {isEdit ? (
                     <input
                       type="text"
                       value={item.time || ""}
@@ -111,7 +112,7 @@ export default function ServiceBlock(props: Props) {
                 {/* 💡 場所部分の編集切り替え */}
                 <div className="flex items-center gap-2">
                   <FaLocationDot className="shrink-0 text-blue-500" />
-                  {edit ? (
+                  {isEdit ? (
                     <input
                       type="text"
                       value={item.location || ""}
@@ -129,7 +130,7 @@ export default function ServiceBlock(props: Props) {
 
               {/* 💡 コメント部分の編集切り替え（複数行入力できるよう textarea にしています） */}
               <div className="mt-5 flex-1 flex flex-col justify-between">
-                {edit ? (
+                {isEdit ? (
                   <textarea
                     value={item.comment || ""}
                     onChange={(e) =>
@@ -147,7 +148,7 @@ export default function ServiceBlock(props: Props) {
                 )}
 
                 {/* 💡 リンク部分の表示（編集モード時は入力フィールドとの重複や誤クリック防止のため非表示にするか、もしくはそのまま表示） */}
-                {!edit && item.link && (
+                {!isEdit && item.link && (
                   <a
                     href={item.link}
                     className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-blue-600 hover:text-blue-700"

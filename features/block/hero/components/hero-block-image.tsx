@@ -5,15 +5,17 @@ import Image from "next/image";
 import ImageUploader from "@/components/media/image-uploader";
 import { HeroBlockData } from "@/features/block";
 import { useImagePicker } from "@/components/image-picker";
+import { SiteMode } from "@/types/site";
 
 type Props = HeroBlockData & {
-  edit?: boolean;
+  mode?: SiteMode;
   onUpdateBlock: (updatedData: HeroBlockData) => void;
 };
 
 export default function HeroBlockSingleImage(props: Props) {
   const data = props;
-  const { edit = false, onUpdateBlock } = props;
+  const { mode = "view", onUpdateBlock } = props;
+  const isEdit = mode === "edit";
   const { title, message, images = [] } = data;
   const image = images?.[0];
 
@@ -22,7 +24,7 @@ export default function HeroBlockSingleImage(props: Props) {
 
   // 🖼️ 画像変更用
   const handleImageEditClick = () => {
-    if (!edit || !openPicker || !onUpdateBlock) return;
+    if (!isEdit || !openPicker || !onUpdateBlock) return;
     openPicker((newUrl: string) => {
       const updatedImages = [{ url: newUrl, alt: title || "Hero Image" }];
       onUpdateBlock({
@@ -43,7 +45,7 @@ export default function HeroBlockSingleImage(props: Props) {
   return (
     <div className="relative min-h-[86svh] overflow-hidden bg-slate-900 px-6 text-white">
       {/* カメラボタン */}
-      {edit && (
+      {isEdit && (
         <div className="absolute right-4 top-4 z-20">
           <ImageUploader
             data={data}
@@ -68,7 +70,7 @@ export default function HeroBlockSingleImage(props: Props) {
       <div className="relative z-10 mx-auto flex min-h-[86svh] max-w-5xl flex-col items-center justify-center pb-28 pt-24 text-center">
         {/* 💡 タイトル部分を修正 */}
         <div className="w-full max-w-4xl mt-4">
-          {edit ? (
+          {isEdit ? (
             // 編集モードの時は、入力用のインプットを表示（見た目は文字っぽくスタイリング）
             <input
               type="text"

@@ -3,15 +3,16 @@ import { FaLocationDot, FaTrain } from "react-icons/fa6";
 import MapBlock from "./map-embed";
 
 import { MetaData } from "@/types/site-meta";
+import { SiteMode } from "@/types/site";
 
 type Props = MetaData & {
   onOpenMetaEditor: () => void;
-  edit?: boolean;
+  mode?: SiteMode;
 };
 
 export default function AccessBlock(props: Props) {
   const meta = props;
-  const { onOpenMetaEditor, edit } = props;
+  const { onOpenMetaEditor } = props;
   const mapAddress = [
     meta.postalCode && `〒${meta.postalCode}`,
     meta.address,

@@ -1,9 +1,10 @@
 import { NewsBlockData } from "@/features/block";
 import { NewsCard } from "@/components/news/news-card";
+import { SiteMode } from "@/types/site";
 
 type Props = NewsBlockData & {
   limit?: number;
-  edit?: boolean;
+  mode?: SiteMode;
 };
 
 export default function NewsBlock(props: Props) {

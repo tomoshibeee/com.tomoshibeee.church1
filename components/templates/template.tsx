@@ -4,12 +4,12 @@ import Header from "@/components/shared/header";
 import Footer from "@/components/shared/footer";
 import BaseSection from "@/features/section/components/base-section";
 import { SectionData } from "@/features/section/types";
-import { SiteData } from "@/types/site";
+import { SiteData, SiteMode } from "@/types/site";
 import { NewsItem } from "@/features/block/news/types";
 
 type Props = {
   site: SiteData;
-  edit?: boolean;
+  mode?: SiteMode;
   newsItems: NewsItem[];
   onUpdateBlock?: (blockId: string, updatedData: Record<string, any>) => void;
   onOpenMetaEditor?: () => void;
@@ -17,7 +17,7 @@ type Props = {
 };
 
 export default function Template(props: Props) {
-  const { site, edit, newsItems, onUpdateBlock, onOpenMetaEditor, onOpenMenuEditor } = props;
+  const { site, mode = "view", newsItems, onUpdateBlock, onOpenMetaEditor, onOpenMenuEditor } = props;
   const sections = site?.layout?.sections;
 
   return (
@@ -29,13 +29,13 @@ export default function Template(props: Props) {
           key={section.id ?? sectionIndex}
           meta={site.meta}
           section={{ ...section }}
-          edit={edit}
+          mode={mode}
           onUpdateBlock={onUpdateBlock ?? (() => {})}
           onOpenMetaEditor={onOpenMetaEditor ?? (() => {})}
         />
       ))}
 
-      <Footer site={site} edit={edit} />
+      <Footer site={site} mode={mode} />
     </div>
   );
 }

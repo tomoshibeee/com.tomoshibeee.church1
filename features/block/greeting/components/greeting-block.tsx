@@ -5,22 +5,24 @@ import { FaQuoteLeft, FaCamera } from "react-icons/fa6";
 
 import { GreetingBlockData } from "@/features/block";
 import { useImagePicker } from "@/components/image-picker";
+import { SiteMode } from "@/types/site";
 
 type Props = GreetingBlockData & {
-  edit?: boolean;
+  mode?: SiteMode;
   onUpdateBlock?: (updatedData: GreetingBlockData) => void;
 };
 
 export default function GreetingBlock(props: Props) {
   const data = props;
-  const { edit = false, onUpdateBlock } = props;
+  const { mode = "view", onUpdateBlock } = props;
+  const isEdit = mode === "edit";
 
   const picker = useImagePicker();
   const openPicker = picker?.openPicker;
 
   // ✍️ テキストフィールドを更新する共通ハンドラー
   const handleChange = (field: keyof GreetingBlockData, value: string) => {
-    if (!edit || !onUpdateBlock) return;
+    if (!isEdit || !onUpdateBlock) return;
     onUpdateBlock?.({
       ...data,
       [field]: value,
@@ -42,7 +44,7 @@ export default function GreetingBlock(props: Props) {
     });
   };
 
-  if (!edit && !data.name?.trim()) return null;
+  if (!isEdit && !data.name?.trim()) return null;
 
   return (
     <div className="bg-white px-6 py-14 text-gray-800">
@@ -63,7 +65,7 @@ export default function GreetingBlock(props: Props) {
               )}
 
               {/* 📸 編集モード時：常に画像の上に重ねるカメラボタン */}
-              {edit && (
+              {isEdit && (
                 <button
                   type="button"
                   onClick={handleImageEditClick}
@@ -78,7 +80,7 @@ export default function GreetingBlock(props: Props) {
 
             <div className="mt-5 w-full space-y-2">
               {/* お名前の編集切り替え */}
-              {edit ? (
+              {isEdit ? (
                 <input
                   type="text"
                   value={data.name || ""}
@@ -91,7 +93,7 @@ export default function GreetingBlock(props: Props) {
               )}
 
               {/* 肩書の編集切り替え */}
-              {edit ? (
+              {isEdit ? (
                 <input
                   type="text"
                   value={data.role || ""}
@@ -110,7 +112,7 @@ export default function GreetingBlock(props: Props) {
 
             {/* プロフィール・略歴の編集切り替え */}
             <div className="mt-4 w-full">
-              {edit ? (
+              {isEdit ? (
                 <textarea
                   value={data.bio || ""}
                   onChange={(e) => handleChange("bio", e.target.value)}
@@ -137,7 +139,7 @@ export default function GreetingBlock(props: Props) {
 
           {/* ごあいさつ文の編集切り替え */}
           <div className="w-full">
-            {edit ? (
+            {isEdit ? (
               <div className="relative rounded-lg bg-slate-50 p-6 shadow-sm">
                 <FaQuoteLeft className="mb-4 text-2xl text-blue-500" />
                 <textarea

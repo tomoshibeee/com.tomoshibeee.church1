@@ -1,6 +1,7 @@
 "use client";
 
 import { MetaData } from "@/types/site-meta";
+import { SiteMode } from "@/types/site";
 import { SectionData } from "@/features/section/types";
 import BlockRenderer from "@/features/block/block-renderer";
 
@@ -9,11 +10,11 @@ type Props = {
   meta: MetaData;
   onUpdateBlock: (blockId: string, updatedData: Record<string, any>) => void;
   onOpenMetaEditor: () => void;
-  edit?: boolean;
+  mode?: SiteMode;
 };
 
 export default function BaseSection(props: Props) {
-  const { section, meta, edit, onUpdateBlock, onOpenMetaEditor } = props;
+  const { section, meta, mode = "view", onUpdateBlock, onOpenMetaEditor } = props;
   if (!section) return null;
   return (
     <section id={section.id} className="p-0 text-gray-800">
@@ -24,7 +25,7 @@ export default function BaseSection(props: Props) {
           block={block}
           onUpdateBlock={onUpdateBlock} 
           onOpenMetaEditor={onOpenMetaEditor}
-          edit={edit}
+          mode={mode}
         />
       ))}
     </section>
