@@ -17,7 +17,6 @@ type SiteFooterProps = {
 };
 
 export default function SiteFooter({ site, mode = "view" }: SiteFooterProps) {
-  const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
   const sortedSocialLinks = [...(site.socialLinks ?? [])].sort(
     (a, b) => a.display_order - b.display_order,
@@ -168,43 +167,72 @@ export default function SiteFooter({ site, mode = "view" }: SiteFooterProps) {
       {/* Control Panel: Edit Mode */}
       {mode === "edit" && (
         <div className="fixed bottom-0 inset-x-0 z-50 flex items-center justify-between gap-4 border-t bg-white p-4 shadow-lg">
-          <Link
-            href={`/dashboard/${site.meta.site_id}/preview`}
-            className="flex-1 rounded-md border border-slate-300 py-2.5 text-center text-sm font-medium text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-400"
-          >
-            プレビュー
-          </Link>
-          <button
-            type="button"
-            onClick={handleSave}
-            disabled={isSaving}
-            className="flex-1 rounded-md bg-blue-600 py-2.5 text-center text-sm font-medium text-white transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
-          >
-            {isSaving ? "保存中..." : "保存"}
-          </button>
+          <PreviewButton siteId={site.meta.site_id} disabled={isSaving} />
+          <SaveButton onSave={handleSave} isSaving={isSaving} />
         </div>
       )}
 
       {/* Control Panel: Preview Mode */}
       {mode === "preview" && (
         <div className="fixed bottom-0 inset-x-0 z-50 flex items-center justify-between gap-4 border-t bg-white p-4 shadow-lg">
-          <button
-            type="button"
-            onClick={() => router.back()}
-            className="flex-1 rounded-md border border-slate-300 py-2.5 text-center text-sm font-medium text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-400"
-          >
-            戻る
-          </button>
-          <button
-            type="button"
-            onClick={handleSave}
-            disabled={isSaving}
-            className="flex-1 rounded-md bg-blue-600 py-2.5 text-center text-sm font-medium text-white transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
-          >
-            {isSaving ? "保存中..." : "保存"}
-          </button>
+          <BackButton disabled={isSaving} />
+          <SaveButton onSave={handleSave} isSaving={isSaving} />
         </div>
       )}
     </footer>
+  );
+}
+
+type CommonButtonProps = {
+  disabled?: boolean;
+};
+
+function PreviewButton({
+  siteId,
+  disabled,
+}: { siteId: string } & CommonButtonProps) {
+  return (
+    <Link
+      href={`/dashboard/${siteId}/preview`}
+      className={`flex-1 rounded-md border border-slate-300 py-2.5 text-center text-sm font-medium text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-400 ${
+        disabled ? "pointer-events-none opacity-50" : ""
+      }`}
+    >
+      プレビュー
+    </Link>
+  );
+}
+
+function BackButton({ disabled }: CommonButtonProps) {
+  const router = useRouter();
+
+  return (
+    <button
+      type="button"
+      onClick={() => router.back()}
+      disabled={disabled}
+      className="flex-1 rounded-md border border-slate-300 py-2.5 text-center text-sm font-medium text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-400 disabled:opacity-50"
+    >
+      戻る
+    </button>
+  );
+}
+
+function SaveButton({
+  onSave,
+  isSaving,
+}: {
+  onSave: () => void;
+  isSaving: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onSave}
+      disabled={isSaving}
+      className="flex-1 rounded-md bg-blue-600 py-2.5 text-center text-sm font-medium text-white transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
+    >
+      {isSaving ? "保存中..." : "保存"}
+    </button>
   );
 }
