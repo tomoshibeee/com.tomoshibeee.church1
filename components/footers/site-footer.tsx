@@ -10,6 +10,7 @@ import { ShareButtonFooter } from "../buttons/share-button";
 import { SiteSocialLink } from "@/models/site-social-link";
 import { SiteData, SiteMode } from "@/types/site";
 import { FaEnvelope, FaLocationDot, FaPhone } from "react-icons/fa6";
+import { saveSite } from "@/app/actions/site";
 
 type SiteFooterProps = {
   site: SiteData;
@@ -27,10 +28,13 @@ export default function SiteFooter({ site, mode = "view" }: SiteFooterProps) {
     setIsSaving(true);
 
     try {
-      // 擬似的な保存処理（ここに Server Action や API 呼び出しを記述）
-      await new Promise((resolve) => setTimeout(resolve, 800));
+      const res = await saveSite(site.meta.site_id, site);
 
-      toast.success("保存が完了しました");
+      if (res.success) {
+        toast.success("保存が完了しました");
+      } else {
+        toast.error(res.error || "保存に失敗しました");
+      }
     } catch (error) {
       console.error("Save failed:", error);
       toast.error("保存に失敗しました");
