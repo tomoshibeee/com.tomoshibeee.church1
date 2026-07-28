@@ -4,6 +4,8 @@ import { SiteData } from "@/types/site";
 import { SectionData } from "@/features/section/types"
 import { MenuItem } from "@/types/site-menu";
 import { SiteMeta } from "@/models/site-meta";
+import { SiteSection, SectionType } from "@/models/site-section";
+import { SiteBlock, BlockType } from "@/models/site-block";
 
 import { Site } from "@/models/site";
 
@@ -192,37 +194,93 @@ export async function updateSiteData(siteId: string, siteData: SiteData): Promis
       }
     })(),
 
-    // C. layout.sections と blocks の保存
+    // C. layout.sections と t_blocks の保存（追加・更新・差分削除）
     (async () => {
       if (!layout?.sections) return;
 
-      for (const section of layout.sections) {
+      const currentSections = layout.sections;
+
+      // --------------------------------------------------
+      // 1. 画面上に存在する ID のリストを抽出
+      // --------------------------------------------------
+      const activeSectionIds = currentSections.map((s) => s.id);
+      const activeBlockIds = currentSections.flatMap(
+        (s) => s.blocks?.map((b) => b.id) ?? []
+      );
+
+      // --------------------------------------------------
+      // 2. 画面から消えた（DBに残っている）データの削除
+      // --------------------------------------------------
+      // UIに存在しない Section をDBから削除
+      if (activeSectionIds.length > 0) {
+        const { error: delSecError } = await supabase
+          .from("t_sections")
+          .delete()
+          .eq("site_id", siteId)
+          .not("id", "in", `(${activeSectionIds.join(",")})`);
+
+        if (delSecError) console.error("❌ t_site_sections delete error:", delSecError);
+      }
+
+      // UIに存在しない Block をDBから削除
+      // （該当サイトのセクションに紐づくブロックのうち、画面にないものを削除）
+      if (activeBlockIds.length > 0) {
+        const { error: delBlockError } = await supabase
+          .from("t_blocks")
+          .delete()
+          .in("section_id", activeSectionIds)
+          .not("id", "in", `(${activeBlockIds.join(",")})`);
+
+        if (delBlockError) console.error("❌ t_blocks delete error:", delBlockError);
+      }
+
+      // --------------------------------------------------
+      // 3. 追加・更新（upsert）の実行
+      // --------------------------------------------------
+      for (let sIdx = 0; sIdx < currentSections.length; sIdx++) {
+        const section = currentSections[sIdx];
+
+        // 親（Section）の upsert
+        const sectionPayload: Omit<SiteSection, "created_at"> = {
+          id: section.id, // 新規追加の場合もフロントで生成したUUIDが入る
+          site_id: siteId,
+          type: section.type as SectionType,
+          display_order: sIdx + 1,
+          updated_at: new Date().toISOString(),
+        };
+
+        const { error: sectionError } = await supabase
+          .from("t_sections")
+          .upsert(sectionPayload);
+
+        if (sectionError) throw sectionError;
+
+        // 子（Block）の upsert
         const isNewsSection = section.type === "site_news" || section.type === "global_news";
 
         if (!isNewsSection && section.blocks) {
-          for (const block of section.blocks) {
-            const b = block as { id?: string; type: string; variant?: string; data: any };
+          for (let bIdx = 0; bIdx < section.blocks.length; bIdx++) {
+            const block = section.blocks[bIdx];
 
-            const { error } = await supabase
-              .from("t_site_blocks")
-              .upsert({
-                id: b.id,
-                section_id: section.id,
-                type: b.type,
-                variant: b.variant ?? "",
-                data: b.data,
-                updated_at: new Date().toISOString(),
-              });
+            const blockPayload: Omit<SiteBlock, "created_at"> = {
+              id: block.id ?? crypto.randomUUID(),
+              section_id: section.id,
+              type: block.type as BlockType,
+              variant: block.variant ?? "",
+              data: block.data ?? {},
+              display_order: bIdx + 1,
+              updated_at: new Date().toISOString(),
+            };
 
-            if (error) {
-              console.error("❌ t_site_blocks upsert error:", error);
-              throw error;
-            }
+            const { error: blockError } = await supabase
+              .from("t_blocks")
+              .upsert(blockPayload);
+
+            if (blockError) throw blockError;
           }
         }
       }
-    })(),
-  ]);
+    })(),]);
 
   console.log(`[success] Site data for "${siteId}" has been successfully updated.`);
 }

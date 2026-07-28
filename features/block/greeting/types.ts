@@ -9,5 +9,6 @@ export type GreetingBlockData = {
 export type GreetingBlockType = {
   id?: string;
   type: "greeting";
+  variant?: "default";
   data: GreetingBlockData;
 };

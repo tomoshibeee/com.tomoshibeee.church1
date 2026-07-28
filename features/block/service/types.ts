@@ -12,5 +12,6 @@ export type ServiceBlockData = {
 export type ServiceBlockType = {
   id?: string;
   type: "service";
+  variant?: "default";
   data: ServiceBlockData;
 };

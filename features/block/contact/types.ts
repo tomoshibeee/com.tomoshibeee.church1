@@ -7,5 +7,6 @@ export type ContactBlockData = {
 export type ContactBlockType = {
   id?: string;
   type: "contact";
+  variant?: "default";
   data: ContactBlockData;
 };

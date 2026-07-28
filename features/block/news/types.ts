@@ -5,6 +5,7 @@ export type NewsBlockData = {
 export type NewsBlockType = {
   id?: string;
   type: "news";
+  variant?: "default";
   data: NewsBlockData;
 };
 

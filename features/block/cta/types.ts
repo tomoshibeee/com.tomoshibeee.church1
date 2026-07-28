@@ -5,5 +5,6 @@ export type CtaBlockData = {
 export type CtaBlockType = {
   id?: string;
   type: "cta";
+  variant?: "default";
   data: CtaBlockData;
 };
