@@ -126,6 +126,7 @@ export default function SiteFooter({ site, mode = "view" }: SiteFooterProps) {
           </ul>
         </div>
       </div>
+
       {/* Bottom */}
       <div className="mx-auto mt-12 flex max-w-5xl flex-col gap-3 border-t border-white/10 py-6 text-slate-500 md:flex-row md:items-center md:justify-between">
         <p>
@@ -141,7 +142,8 @@ export default function SiteFooter({ site, mode = "view" }: SiteFooterProps) {
           </a>
         </div>
       </div>
-      {/* Control Panel */}
+
+      {/* Control Panel: Edit Mode */}
       {mode === "edit" && (
         <div className="fixed bottom-0 inset-x-0 z-50 flex items-center justify-between gap-4 border-t bg-white p-4 shadow-lg">
           <Link
@@ -149,6 +151,24 @@ export default function SiteFooter({ site, mode = "view" }: SiteFooterProps) {
             className="flex-1 rounded-md border border-slate-300 py-2.5 text-center text-sm font-medium text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-400"
           >
             プレビュー
+          </Link>
+          <Link
+            href={`/dashboard/${site.meta.site_id}/save`}
+            className="flex-1 rounded-md bg-blue-600 py-2.5 text-center text-sm font-medium text-white transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          >
+            保存
+          </Link>
+        </div>
+      )}
+
+      {/* Control Panel: Preview Mode */}
+      {mode === "preview" && (
+        <div className="fixed bottom-0 inset-x-0 z-50 flex items-center justify-between gap-4 border-t bg-white p-4 shadow-lg">
+          <Link
+            href={`/dashboard/${site.meta.site_id}/edit`}
+            className="flex-1 rounded-md border border-slate-300 py-2.5 text-center text-sm font-medium text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-400"
+          >
+            戻る
           </Link>
           <Link
             href={`/dashboard/${site.meta.site_id}/save`}
