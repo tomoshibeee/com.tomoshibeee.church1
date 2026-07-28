@@ -52,7 +52,7 @@ export default async function Page() {
           <div className="grid md:grid-cols-3 gap-4">
             <AddSiteButton />
             {siteMetas.map((m) => (
-              <SiteLink key={m.site_id} meta={m} edit={true} />
+              <SiteLink key={m.site_id} meta={m} mode="edit" />
             ))}
           </div>
         </section>

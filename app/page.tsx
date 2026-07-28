@@ -73,7 +73,7 @@ export default async function Page() {
           {/* 💡 index画面なので、一般ユーザー（閲覧モード）として edit={false} で表示 */}
           <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
             {siteMetas.map((m) => (
-              <SiteLink key={m.site_id} meta={m} edit={false} />
+              <SiteLink key={m.site_id} meta={m} mode="view" />
             ))}
           </div>
         </section>
