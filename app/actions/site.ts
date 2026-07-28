@@ -3,7 +3,7 @@
 import { updateSiteData } from "@/services/site-service";
 import { SiteData } from "@/types/site";
 
-export async function saveSite(siteId: string, data: SiteData) {
+export async function saveSiteAction(siteId: string, data: SiteData) {
   try {
     await updateSiteData(siteId, data);
     return { success: true };

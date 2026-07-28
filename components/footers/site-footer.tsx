@@ -10,7 +10,7 @@ import { ShareButtonFooter } from "../buttons/share-button";
 import { SiteSocialLink } from "@/models/site-social-link";
 import { SiteData, SiteMode } from "@/types/site";
 import { FaEnvelope, FaLocationDot, FaPhone } from "react-icons/fa6";
-import { saveSite } from "@/app/actions/site";
+import { saveSiteAction } from "@/app/actions/site";
 
 type SiteFooterProps = {
   site: SiteData;
@@ -28,7 +28,7 @@ export default function SiteFooter({ site, mode = "view" }: SiteFooterProps) {
     setIsSaving(true);
 
     try {
-      const res = await saveSite(site.meta.site_id, site);
+      const res = await saveSiteAction(site.meta.site_id, site);
 
       if (res.success) {
         toast.success("保存が完了しました");
