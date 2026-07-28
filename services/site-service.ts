@@ -3,6 +3,7 @@ import { supabase } from "@/lib/supabase";
 import { SiteData } from "@/types/site";
 import { SectionData } from "@/features/section/types"
 import { MenuItem } from "@/types/site-menu";
+import { SiteMeta } from "@/models/site-meta";
 
 import { Site } from "@/models/site";
 
@@ -143,57 +144,80 @@ export async function getSiteData(siteId: string): Promise<SiteData> {
 export async function updateSiteData(siteId: string, siteData: SiteData): Promise<void> {
   const { meta, navigation, layout } = siteData;
 
-  // 1️⃣ まとめて並列処理（Promise.all）で効率よく各テーブルを逆変換・保存
+  // 1️⃣ 並列処理で各テーブルを保存
   await Promise.all([
     // A. t_sites テーブル（navigation.menu の保存）
-    // DB側（t_sites.navigation）にメニューの配列をそのままJSONとして保存します
-    supabase
-      .from("t_sites")
-      .update({
-        navigation: navigation?.menu ?? [], // ⭕️ ここが getSiteData の逆！
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", siteId),
+    (async () => {
+      const { error, count } = await supabase
+        .from("t_sites")
+        .update({
+          navigation: navigation?.menu ?? [],
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", siteId); // ⚠️ DB側のキー名が 'id' か 'site_id' か確認してください
+
+      if (error) {
+        console.error("❌ t_sites update error:", error);
+        throw error;
+      }
+    })(),
 
     // B. t_site_metas テーブルの更新
-    // meta（SiteData.meta）の中に含まれる、タイトルや説明文、slug などをバラして保存
-    supabase
-      .from("t_site_metas")
-      .upsert({
+    (async () => {
+      // DBの型（SiteMeta）に合わせてオブジェクトを作成
+      // Omit で自動生成される id / created_at を除外しておくと型チェックが効きます
+      const metaPayload: Omit<SiteMeta, "id" | "created_at"> = {
         site_id: siteId,
-        title: meta.name,
-        description: meta.description,
+        name: meta.name,
         slug: meta.slug,
-        // その他 meta に含まれるカラムがあればここにマッピング
+        description: meta.description ?? null,
+        tel: meta.tel,
+        email: meta.email,
+        postal_code: meta.postalCode ?? "", // TODO : キャメルケース -> スネークケース
+        address: meta.address,
+        building: meta.bldg ?? "",         // TODO : bldg -> building
+        access: meta.access,
+        background_image: meta.background_image ?? null,
+        avatar: meta.avatar ?? null,
         updated_at: new Date().toISOString(),
-      }),
+      };
+
+      const { error } = await supabase
+        .from("t_site_metas")
+        .upsert(metaPayload, { onConflict: "site_id" }); // site_id をキーにして更新
+
+      if (error) {
+        console.error("❌ t_site_metas upsert error:", error);
+        throw error;
+      }
+    })(),
 
     // C. layout.sections と blocks の保存
-    // 階層構造になっている layout を分解して、各セクション・ブロックをループ処理
     (async () => {
       if (!layout?.sections) return;
 
       for (const section of layout.sections) {
-        // ※ お知らせ（site_news, global_news）は、blocksテーブルではなく
-        // 専用テーブルで管理されているため、通常のブロックのみをフィルタリングして保存します
         const isNewsSection = section.type === "site_news" || section.type === "global_news";
 
         if (!isNewsSection && section.blocks) {
-          // 各ブロックのデータを更新
           for (const block of section.blocks) {
             const b = block as { id?: string; type: string; variant?: string; data: any };
 
-            await supabase
+            const { error } = await supabase
               .from("t_site_blocks")
               .upsert({
                 id: b.id,
                 section_id: section.id,
                 type: b.type,
-                // 💡 variant が存在すればその値（"single"など）を、なければ空文字 "" または null を入れる
                 variant: b.variant ?? "",
                 data: b.data,
                 updated_at: new Date().toISOString(),
               });
+
+            if (error) {
+              console.error("❌ t_site_blocks upsert error:", error);
+              throw error;
+            }
           }
         }
       }
