@@ -8,7 +8,7 @@ export function dummySiteSocialLinkModelData(siteIds: string[]) {
             return {
                 id: randomUUID(),
                 site_id: siteIds[i],
-                type: a.type, // ←これも修正🔥
+                type_id: a.type, // ←これも修正🔥
                 url: a.url,
                 display_order: a.priority,
                 created_at: now,
