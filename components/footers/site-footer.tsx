@@ -2,7 +2,9 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { LinkButtonFooter } from "@/components/buttons/link-button";
 import { ShareButtonFooter } from "../buttons/share-button";
 import { SiteSocialLink } from "@/models/site-social-link";
@@ -16,9 +18,27 @@ type SiteFooterProps = {
 
 export default function SiteFooter({ site, mode = "view" }: SiteFooterProps) {
   const router = useRouter();
+  const [isSaving, setIsSaving] = useState(false);
   const sortedSocialLinks = [...(site.socialLinks ?? [])].sort(
     (a, b) => a.display_order - b.display_order,
   );
+
+  // 保存処理のハンドラー
+  const handleSave = async () => {
+    setIsSaving(true);
+
+    try {
+      // 擬似的な保存処理（ここに Server Action や API 呼び出しを記述）
+      await new Promise((resolve) => setTimeout(resolve, 800));
+
+      toast.success("保存が完了しました");
+    } catch (error) {
+      console.error("Save failed:", error);
+      toast.error("保存に失敗しました");
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   return (
     <footer className="w-full border-t border-slate-200 bg-slate-950 px-6 pt-14 text-sm text-slate-300">
@@ -154,12 +174,14 @@ export default function SiteFooter({ site, mode = "view" }: SiteFooterProps) {
           >
             プレビュー
           </Link>
-          <Link
-            href={`/dashboard/${site.meta.site_id}/save`}
-            className="flex-1 rounded-md bg-blue-600 py-2.5 text-center text-sm font-medium text-white transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          <button
+            type="button"
+            onClick={handleSave}
+            disabled={isSaving}
+            className="flex-1 rounded-md bg-blue-600 py-2.5 text-center text-sm font-medium text-white transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
           >
-            保存
-          </Link>
+            {isSaving ? "保存中..." : "保存"}
+          </button>
         </div>
       )}
 
@@ -173,12 +195,14 @@ export default function SiteFooter({ site, mode = "view" }: SiteFooterProps) {
           >
             戻る
           </button>
-          <Link
-            href={`/dashboard/${site.meta.site_id}/save`}
-            className="flex-1 rounded-md bg-blue-600 py-2.5 text-center text-sm font-medium text-white transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          <button
+            type="button"
+            onClick={handleSave}
+            disabled={isSaving}
+            className="flex-1 rounded-md bg-blue-600 py-2.5 text-center text-sm font-medium text-white transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
           >
-            保存
-          </Link>
+            {isSaving ? "保存中..." : "保存"}
+          </button>
         </div>
       )}
     </footer>
