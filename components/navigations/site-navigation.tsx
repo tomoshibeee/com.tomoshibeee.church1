@@ -92,6 +92,31 @@ export default function SiteNavigation({
     });
   };
 
+  const handleUpdateSection = (
+    sectionId: string,
+    updatedFields: Record<string, any>,
+  ) => {
+    setSite((prevSite) => {
+      const nextSections = prevSite.layout.sections.map((section) => {
+        if (section.id === sectionId) {
+          return {
+            ...section,
+            ...updatedFields,
+          };
+        }
+        return section;
+      });
+
+      return {
+        ...prevSite,
+        layout: {
+          ...prevSite.layout,
+          sections: nextSections,
+        },
+      };
+    });
+  };
+
   return (
     <>
       <ImagePickerProvider>
@@ -100,6 +125,7 @@ export default function SiteNavigation({
           mode="edit"
           newsItems={newsItems}
           onUpdateBlock={handleUpdateBlock}
+          onUpdateSection={handleUpdateSection}
           onOpenMetaEditor={() => setIsMetaOpen(true)}
           onOpenMenuEditor={() => setIsMenuOpen(true)}
         />

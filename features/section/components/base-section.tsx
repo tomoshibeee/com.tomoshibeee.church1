@@ -43,7 +43,7 @@ export default function BaseSection(props: Props) {
     <section id={anchorId} className="relative p-0 text-gray-800 scroll-mt-20">
       {/* 💡 editモード時：HeroBlockと同じスタイルの左上オーバーレイ入力欄 */}
       {isEdit && (
-        <div className="absolute left-3 top-3 z-30 flex items-center gap-1 rounded.2xl bg-slate-900/80 px-2.5 py-1 text-xs text-white shadow-md backdrop-blur-sm">
+        <div className="absolute left-3 top-3 z-30 flex items-center gap-1 rounded-2xl bg-slate-900/80 px-2.5 py-1 text-xs text-white shadow-md backdrop-blur-sm">
           <span className="font-mono text-slate-400">#</span>
           <input
             type="text"

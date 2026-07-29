@@ -12,12 +12,13 @@ type Props = {
   mode?: SiteMode;
   newsItems: NewsItem[];
   onUpdateBlock?: (blockId: string, updatedData: Record<string, any>) => void;
+  onUpdateSection?: (sectionId: string, updatedFields: Record<string, any>) => void;
   onOpenMetaEditor?: () => void;
   onOpenMenuEditor?: () => void;
 };
 
 export default function Template(props: Props) {
-  const { site, mode = "view", newsItems, onUpdateBlock, onOpenMetaEditor, onOpenMenuEditor } = props;
+  const { site, mode = "view", newsItems, onUpdateBlock, onUpdateSection, onOpenMetaEditor, onOpenMenuEditor } = props;
   const sections = site?.layout?.sections;
 
   return (
@@ -31,6 +32,7 @@ export default function Template(props: Props) {
           section={{ ...section }}
           mode={mode}
           onUpdateBlock={onUpdateBlock ?? (() => {})}
+          onUpdateSection={onUpdateSection ?? (() => {})}
           onOpenMetaEditor={onOpenMetaEditor ?? (() => {})}
         />
       ))}
