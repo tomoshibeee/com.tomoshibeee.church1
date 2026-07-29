@@ -20,8 +20,13 @@ export function SiteLink(props: Props) {
         ? `/dashboard/${site_id}/preview`
         : `/p/${slug}`;
 
-  const siteImage = background_image ?? "/default-site-cover.png";
-  const siteAvatar = avatar ?? "/default-icon.png";
+  const siteImage =
+    background_image && background_image.trim() !== ""
+      ? background_image
+      : "https://picsum.photos/1200/600";
+
+  const siteAvatar =
+    avatar && avatar.trim() !== "" ? avatar : "https://picsum.photos/200/200";
 
   return (
     <Link
