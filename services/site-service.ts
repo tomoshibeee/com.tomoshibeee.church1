@@ -143,6 +143,109 @@ export async function getSiteData(siteId: string): Promise<SiteData> {
   return ret as SiteData;
 }
 
+// TODO : commit & rollback の処理を追加する
+export async function createSiteData(siteData: SiteData): Promise<string> {
+  const { meta, navigation, layout } = siteData;
+
+  // 1️⃣ 親テーブル (t_sites) に作成して siteId を発行
+  const { data: siteRecord, error: siteError } = await supabase
+    .from("t_sites")
+    .insert({
+      navigation: navigation?.menu ?? [],
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    })
+    .select("id")
+    .single();
+
+  if (siteError || !siteRecord) {
+    console.error("❌ t_sites insert error:", siteError);
+    throw siteError;
+  }
+
+  const siteId = siteRecord.id;
+
+  // 2️⃣ 関連テーブルへの挿入
+  await Promise.all([
+    // A. メタ情報の挿入
+    (async () => {
+      const metaPayload: Omit<SiteMeta, "id" | "created_at"> = {
+        site_id: siteId,
+        name: meta.name,
+        slug: meta.slug,
+        description: meta.description ?? null,
+        tel: meta.tel ?? "",
+        email: meta.email ?? "",
+        postal_code: meta.postalCode ?? "",
+        address: meta.address ?? "",
+        building: meta.bldg ?? "",
+        access: meta.access ?? "",
+        background_image: meta.background_image ?? null,
+        avatar: meta.avatar ?? null,
+        updated_at: new Date().toISOString(),
+      };
+
+      const { error } = await supabase
+        .from("t_site_metas")
+        .insert(metaPayload);
+
+      if (error) throw error;
+    })(),
+
+    // B. セクションとブロックの挿入 (順序: Section -> Block)
+    (async () => {
+      if (!layout?.sections) return;
+
+      for (let sIdx = 0; sIdx < layout.sections.length; sIdx++) {
+        const section = layout.sections[sIdx];
+        const sectionId = section.id || crypto.randomUUID();
+
+        // Section の挿入
+        const sectionPayload: Omit<SiteSection, "created_at"> = {
+          id: sectionId,
+          site_id: siteId,
+          type: section.type as SectionType,
+          display_order: sIdx + 1,
+          updated_at: new Date().toISOString(),
+        };
+
+        const { error: sectionError } = await supabase
+          .from("t_sections")
+          .insert(sectionPayload);
+
+        if (sectionError) throw sectionError;
+
+        // Block の挿入
+        const isNewsSection = section.type === "site_news" || section.type === "global_news";
+
+        if (!isNewsSection && section.blocks) {
+          for (let bIdx = 0; bIdx < section.blocks.length; bIdx++) {
+            const block = section.blocks[bIdx];
+
+            const blockPayload: Omit<SiteBlock, "created_at"> = {
+              id: block.id ?? crypto.randomUUID(),
+              section_id: sectionId,
+              type: block.type as BlockType,
+              variant: block.variant ?? "",
+              data: block.data ?? {},
+              display_order: bIdx + 1,
+              updated_at: new Date().toISOString(),
+            };
+
+            const { error: blockError } = await supabase
+              .from("t_blocks")
+              .insert(blockPayload);
+
+            if (blockError) throw blockError;
+          }
+        }
+      }
+    })(),
+  ]);
+
+  return siteId;
+}
+
 export async function updateSiteData(siteId: string, siteData: SiteData): Promise<void> {
   const { meta, navigation, layout } = siteData;
 
