@@ -157,143 +157,15 @@ export async function createSiteData(siteData: SiteData): Promise<string> {
 }
 
 export async function updateSiteData(siteId: string, siteData: SiteData): Promise<void> {
-  const { meta, navigation, layout } = siteData;
+  const { error } = await supabase.rpc("update_site_all", {
+    p_site_id: siteId,
+    payload: siteData,
+  });
 
-  // 1️⃣ 並列処理で各テーブルを保存
-  await Promise.all([
-    // A. t_sites テーブル（navigation.menu の保存）
-    (async () => {
-      const { error, count } = await supabase
-        .from("t_sites")
-        .update({
-          navigation: navigation?.menu ?? [],
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", siteId); // ⚠️ DB側のキー名が 'id' か 'site_id' か確認してください
-
-      if (error) {
-        console.error("❌ t_sites update error:", error);
-        throw error;
-      }
-    })(),
-
-    // B. t_site_metas テーブルの更新
-    (async () => {
-      // DBの型（SiteMeta）に合わせてオブジェクトを作成
-      // Omit で自動生成される id / created_at を除外しておくと型チェックが効きます
-      const metaPayload: Omit<SiteMeta, "id" | "created_at"> = {
-        site_id: siteId,
-        name: meta.name,
-        slug: meta.slug,
-        description: meta.description ?? null,
-        tel: meta.tel,
-        email: meta.email,
-        postal_code: meta.postalCode ?? "", // TODO : キャメルケース -> スネークケース
-        address: meta.address,
-        building: meta.bldg ?? "",         // TODO : bldg -> building
-        access: meta.access,
-        background_image: meta.background_image ?? null,
-        avatar: meta.avatar ?? null,
-        updated_at: new Date().toISOString(),
-      };
-
-      const { error } = await supabase
-        .from("t_site_metas")
-        .upsert(metaPayload, { onConflict: "site_id" }); // site_id をキーにして更新
-
-      if (error) {
-        console.error("❌ t_site_metas upsert error:", error);
-        throw error;
-      }
-    })(),
-
-    // C. layout.sections と t_blocks の保存（追加・更新・差分削除）
-    (async () => {
-      if (!layout?.sections) return;
-
-      const currentSections = layout.sections;
-
-      // --------------------------------------------------
-      // 1. 画面上に存在する ID のリストを抽出
-      // --------------------------------------------------
-      const activeSectionIds = currentSections.map((s) => s.id);
-      const activeBlockIds = currentSections.flatMap(
-        (s) => s.blocks?.map((b) => b.id) ?? []
-      );
-
-      // --------------------------------------------------
-      // 2. 画面から消えた（DBに残っている）データの削除
-      // --------------------------------------------------
-      // UIに存在しない Section をDBから削除
-      if (activeSectionIds.length > 0) {
-        const { error: delSecError } = await supabase
-          .from("t_sections")
-          .delete()
-          .eq("site_id", siteId)
-          .not("id", "in", `(${activeSectionIds.join(",")})`);
-
-        if (delSecError) console.error("❌ t_site_sections delete error:", delSecError);
-      }
-
-      // UIに存在しない Block をDBから削除
-      // （該当サイトのセクションに紐づくブロックのうち、画面にないものを削除）
-      if (activeBlockIds.length > 0) {
-        const { error: delBlockError } = await supabase
-          .from("t_blocks")
-          .delete()
-          .in("section_id", activeSectionIds)
-          .not("id", "in", `(${activeBlockIds.join(",")})`);
-
-        if (delBlockError) console.error("❌ t_blocks delete error:", delBlockError);
-      }
-
-      // --------------------------------------------------
-      // 3. 追加・更新（upsert）の実行
-      // --------------------------------------------------
-      for (let sIdx = 0; sIdx < currentSections.length; sIdx++) {
-        const section = currentSections[sIdx];
-
-        // 親（Section）の upsert
-        const sectionPayload: Omit<SiteSection, "created_at"> = {
-          id: section.id, // 新規追加の場合もフロントで生成したUUIDが入る
-          site_id: siteId,
-          type: section.type as SectionType,
-          display_order: sIdx + 1,
-          updated_at: new Date().toISOString(),
-        };
-
-        const { error: sectionError } = await supabase
-          .from("t_sections")
-          .upsert(sectionPayload);
-
-        if (sectionError) throw sectionError;
-
-        // 子（Block）の upsert
-        const isNewsSection = section.type === "site_news" || section.type === "global_news";
-
-        if (!isNewsSection && section.blocks) {
-          for (let bIdx = 0; bIdx < section.blocks.length; bIdx++) {
-            const block = section.blocks[bIdx];
-
-            const blockPayload: Omit<SiteBlock, "created_at"> = {
-              id: block.id ?? crypto.randomUUID(),
-              section_id: section.id,
-              type: block.type as BlockType,
-              variant: block.variant ?? "",
-              data: block.data ?? {},
-              display_order: bIdx + 1,
-              updated_at: new Date().toISOString(),
-            };
-
-            const { error: blockError } = await supabase
-              .from("t_blocks")
-              .upsert(blockPayload);
-
-            if (blockError) throw blockError;
-          }
-        }
-      }
-    })(),]);
+  if (error) {
+    console.error("❌ updateSiteData (RPC) error:", error);
+    throw new Error(`Failed to update site data: ${error.message}`);
+  }
 
   console.log(`[success] Site data for "${siteId}" has been successfully updated.`);
 }
