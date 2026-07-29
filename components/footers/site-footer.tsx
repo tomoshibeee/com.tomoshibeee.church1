@@ -27,6 +27,11 @@ export default function SiteFooter({ site, mode = "view" }: SiteFooterProps) {
   const handleSave = async () => {
     setIsSaving(true);
 
+    if (!site.meta.site_id) {
+      toast.error("サイトIDが見つかりません。");
+      return;
+    }
+
     try {
       const res = await saveSiteAction(site.meta.site_id, site);
 
@@ -169,7 +174,7 @@ export default function SiteFooter({ site, mode = "view" }: SiteFooterProps) {
       </div>
 
       {/* Control Panel: Edit Mode */}
-      {mode === "edit" && (
+      {mode === "edit" && site.meta.site_id && (
         <div className="fixed bottom-0 inset-x-0 z-50 flex items-center justify-between gap-4 border-t bg-white p-4 shadow-lg">
           <PreviewButton siteId={site.meta.site_id} disabled={isSaving} />
           <SaveButton onSave={handleSave} isSaving={isSaving} />

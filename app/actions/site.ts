@@ -1,23 +1,25 @@
 "use server";
 
 import { createSiteData, updateSiteData } from "@/services/site-service";
+import { generateInitialSiteData } from "@/utils/generateInitialSiteData";
 import { SiteData } from "@/types/site";
 import { redirect } from "next/navigation";
 
-export async function createSiteAction(siteData: SiteData) {
-  console.log("=== Server Action 開始 (新規作成 RPC) ===");
-
+export async function createSiteAction(name: string, slug: string) {
   let newSiteId: string;
 
   try {
-    newSiteId = await createSiteData(siteData);
-    console.log("サイト作成成功 siteId:", newSiteId);
+    // 1. 静的関数から初期データオブジェクトを作成
+    const initialData = generateInitialSiteData(name, slug);
+
+    // 2. DB (RPC等) に登録
+    newSiteId = await createSiteData(initialData);
   } catch (error) {
     console.error("createSiteAction エラー:", error);
     return { success: false, error: String(error) };
   }
 
-  // 作成完了後、該当サイトのダッシュボード/編集画面へリダイレクト
+  // 3. 作成されたサイトのダッシュボード等へリダイレクト
   redirect(`/dashboard/${newSiteId}`);
 }
 
