@@ -28,11 +28,11 @@ export function generateInitialSiteData(name: string, slug: string): SiteData {
         layout: {
             sections: [
                 {
-                    id: "hero",
+                    id: crypto.randomUUID(), // ← 文字列 "hero" ではなく UUID に変更
                     type: "hero",
                     blocks: [
                         {
-                            id: "hero-main",
+                            id: crypto.randomUUID(), // ← 文字列 "hero-main" ではなく UUID に変更
                             type: "hero",
                             variant: "single",
                             data: {
@@ -43,11 +43,11 @@ export function generateInitialSiteData(name: string, slug: string): SiteData {
                     ],
                 },
                 {
-                    id: "about",
+                    id: crypto.randomUUID(), // ← UUID に変更
                     type: "about",
                     blocks: [
                         {
-                            id: "about-main",
+                            id: crypto.randomUUID(), // ← UUID に変更
                             type: "greeting",
                             variant: "default",
                             data: {
@@ -61,11 +61,11 @@ export function generateInitialSiteData(name: string, slug: string): SiteData {
                     ],
                 },
                 {
-                    id: "service",
+                    id: crypto.randomUUID(), // ← UUID に変更
                     type: "service",
                     blocks: [
                         {
-                            id: "service-main",
+                            id: crypto.randomUUID(), // ← UUID に変更
                             type: "service",
                             variant: "default",
                             data: {
@@ -83,11 +83,11 @@ export function generateInitialSiteData(name: string, slug: string): SiteData {
                     ],
                 },
                 {
-                    id: "access",
+                    id: crypto.randomUUID(), // ← UUID に変更
                     type: "access",
                     blocks: [
                         {
-                            id: "access-block",
+                            id: crypto.randomUUID(), // ← UUID に変更
                             type: "access",
                             variant: "default",
                             data: {},
@@ -95,11 +95,11 @@ export function generateInitialSiteData(name: string, slug: string): SiteData {
                     ],
                 },
                 {
-                    id: "contact",
+                    id: crypto.randomUUID(), // ← UUID に変更
                     type: "contact",
                     blocks: [
                         {
-                            id: "contact-main",
+                            id: crypto.randomUUID(), // ← UUID に変更
                             type: "contact",
                             variant: "default",
                             data: { description: "お気軽にお問い合わせください。" },
