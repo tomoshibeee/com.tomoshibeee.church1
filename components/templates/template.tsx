@@ -3,7 +3,7 @@
 import Header from "@/components/shared/header";
 import Footer from "@/components/shared/footer";
 import BaseSection from "@/features/section/components/base-section";
-import { SectionData } from "@/features/section/types";
+import { Section } from "@/features/section/types"; // 👈 SectionData から Section に変更
 import { SiteData, SiteMode } from "@/types/site";
 import { NewsItem } from "@/features/block/news/types";
 
@@ -25,7 +25,7 @@ export default function Template(props: Props) {
     <div>
       <Header site={site} newsItems={newsItems} onOpenMenuEditor={onOpenMenuEditor} />
 
-      {sections?.map((section: SectionData, sectionIndex: number) => (
+      {sections?.map((section: Section, sectionIndex: number) => ( // 👈 ここも Section に変更
         <BaseSection
           key={section.id ?? sectionIndex}
           meta={site.meta}

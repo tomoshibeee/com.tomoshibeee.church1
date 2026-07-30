@@ -1,8 +1,11 @@
+import { SectionData } from "@/features/section/types";
+
 export type SiteSection = {
     id: string;
     site_id: string;
     type: SectionType;
     display_order: number;
+    data: SectionData | null;
     created_at: string;
     updated_at: string;
 };

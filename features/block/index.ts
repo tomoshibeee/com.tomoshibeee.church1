@@ -6,13 +6,13 @@ export type { AccessBlockData, AccessBlockType } from "./access/types";
 export type { CtaBlockData, CtaBlockType } from "./cta/types";
 export type { ContactBlockData, ContactBlockType } from "./contact/types";
 
-import type { HeroBlockType } from "./hero/types";
-import type { GreetingBlockType } from "./greeting/types";
-import type { ServiceBlockType } from "./service/types";
-import type { NewsBlockType } from "./news/types";
-import type { AccessBlockType } from "./access/types";
-import type { CtaBlockType } from "./cta/types";
-import type { ContactBlockType } from "./contact/types";
+import type { HeroBlockType, HeroBlockData } from "./hero/types";
+import type { GreetingBlockType, GreetingBlockData } from "./greeting/types";
+import type { ServiceBlockType, ServiceBlockData } from "./service/types";
+import type { NewsBlockType, NewsBlockData } from "./news/types";
+import type { AccessBlockType, AccessBlockData } from "./access/types";
+import type { CtaBlockType, CtaBlockData } from "./cta/types";
+import type { ContactBlockType, ContactBlockData } from "./contact/types";
 
 export type Block =
   | HeroBlockType
@@ -22,3 +22,13 @@ export type Block =
   | AccessBlockType
   | CtaBlockType
   | ContactBlockType;
+
+export type BlockData =
+  | HeroBlockData
+  | GreetingBlockData
+  | ServiceBlockData    
+  | NewsBlockData
+  | AccessBlockData
+  | CtaBlockData
+  | ContactBlockData
+  | Record<string, any>;

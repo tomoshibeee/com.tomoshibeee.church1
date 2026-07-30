@@ -1,11 +1,8 @@
 import { supabase } from "@/lib/supabase";
 
 import { SiteData } from "@/types/site";
-import { SectionData } from "@/features/section/types"
+import { Section } from "@/features/section/types"
 import { MenuItem } from "@/types/site-menu";
-import { SiteMeta } from "@/models/site-meta";
-import { SiteSection, SectionType } from "@/models/site-section";
-import { SiteBlock, BlockType } from "@/models/site-block";
 
 import { Site } from "@/models/site";
 
@@ -15,8 +12,6 @@ import { getSiteBlocks } from "@/services/site-block-service";
 import { getSiteNews, toSiteNewsItems } from "@/services/site-news-service";
 import { getGlobalNews, toGlobalNewsItems } from "@/services/global-news-service";
 import { getSiteSocialLinks } from "@/services/site-social-link-service";
-
-import { updateSiteMeta } from "@/services/site-meta-service";
 
 export async function getSites() {
   const { data, error } = await supabase.from("t_sites").select("*");
@@ -125,6 +120,7 @@ export async function getSiteData(siteId: string): Promise<SiteData> {
       return {
         id: s.id,
         type: s.type,
+        data: s.data,
         blocks: blocksWithNews
       };
     })
@@ -135,7 +131,7 @@ export async function getSiteData(siteId: string): Promise<SiteData> {
       menu: site?.navigation ?? []
     } as { menu?: MenuItem[] },
     layout: {
-      sections: sectionData as SectionData[],
+      sections: sectionData as Section[],
     },
     socialLinks: socialLinks,
   };
