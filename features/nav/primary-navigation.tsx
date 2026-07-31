@@ -7,6 +7,7 @@ import { SiteData } from "@/types/site";
 import { MenuItem } from "@/types/site-menu";
 import { NewsItem } from "@/features/block/news/types";
 import { UserData } from "@/types/user";
+import { LoginButton, SignupButton } from "@/components/buttons/auth/index";
 
 type Props = {
   site?: SiteData;
@@ -44,18 +45,8 @@ export function PrimaryNavigation(props: Props) {
               menu={[{ label: "お知らせ", type: "news" }]}
               newsItems={newsItems}
             />
-            <a
-              href="/login"
-              className="text-xs font-medium text-slate-600 hover:text-slate-900 transition-colors"
-            >
-              ログイン
-            </a>
-            <a
-              href="/signup"
-              className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-blue-700 transition-colors"
-            >
-              新規登録
-            </a>
+            <LoginButton />
+            <SignupButton />
           </div>
         )}
 

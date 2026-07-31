@@ -10,6 +10,8 @@ import { supabase } from "@/lib/supabase";
 import { FaBars, FaXmark } from "react-icons/fa6";
 import { NewsModal } from "@/components/news/news-modal";
 
+import { LogoutButton } from "@/components/buttons/auth/index";
+
 type Props = {
   menu: MenuItem[];
   newsItems: NewsItem[];
@@ -81,18 +83,12 @@ export function HamburgerMenu(props: Props) {
                 // 🚪 パターン2: ログアウトボタンの場合
                 if (m.type === "logout") {
                   return (
-                    <div
+                    <LogoutButton
                       key={`${i}-${m.label}`}
-                      className="flex flex-col gap-2"
-                    >
-                      <button
-                        type="button"
-                        onClick={handleLogout}
-                        className="text-sm font-bold text-red-600 py-1 hover:text-red-700 text-left cursor-pointer"
-                      >
-                        {m.label}
-                      </button>
-                    </div>
+                      i={i}
+                      label={m.label}
+                      handleLogout={handleLogout}
+                    />
                   );
                 }
 
