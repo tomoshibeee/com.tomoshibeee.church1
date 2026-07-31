@@ -19,24 +19,46 @@ export function PrimaryNavigation(props: Props) {
   const { site, user, newsItems, onOpenMenuEditor } = props;
 
   // ----------------------------------------------------
-  // パターンA: 完全に初期状態などで site すらない場合のフォールバック（ダッシュボードはここを通っている）
+  // パターンA: 完全に初期状態などで site すらない場合（トップページやダッシュボード等）
   // ----------------------------------------------------
   if (!site) {
-    const defaultMenu: MenuItem[] = [
+    // 💡 user が存在するとき（ログイン時）のメニュー構造
+    const userMenu: MenuItem[] = [
       { label: "お知らせ", type: "news" },
-      // 💡 DropDownMenu の中から「メニュー編集」を削除します（動かない・見えない原因になるため）
       {
         label: user?.name ?? "",
         icon: user?.avator,
         children: [{ label: "ログアウト", type: "logout" }],
       },
     ];
+
     return (
       <nav className="hidden h-full md:flex items-center gap-4">
-        {" "}
-        {/* gapを4に統一 */}
-        <DropDownMenu menu={defaultMenu} newsItems={newsItems} />
-        {/* ⭕️ 解決策：DropDownMenu の外側に直接ボタンを配置する！ */}
+        {user ? (
+          /* ログイン済みの表示 */
+          <DropDownMenu menu={userMenu} newsItems={newsItems} />
+        ) : (
+          /* 未ログイン時（トップページ等）の表示 */
+          <div className="flex items-center gap-3">
+            <DropDownMenu
+              menu={[{ label: "お知らせ", type: "news" }]}
+              newsItems={newsItems}
+            />
+            <a
+              href="/login"
+              className="text-xs font-medium text-slate-600 hover:text-slate-900 transition-colors"
+            >
+              ログイン
+            </a>
+            <a
+              href="/signup"
+              className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-blue-700 transition-colors"
+            >
+              新規登録
+            </a>
+          </div>
+        )}
+
         {onOpenMenuEditor && (
           <button
             type="button"

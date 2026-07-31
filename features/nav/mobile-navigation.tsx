@@ -19,7 +19,7 @@ export function MobileNavigation(props: Props) {
   const { site, user, newsItems, onOpenMenuEditor } = props;
 
   // ----------------------------------------------------
-  // パターンA: 完全に初期状態などで site すらない場合のフォールバック
+  // パターンA: 完全に初期状態などで site すらない場合のフォールバック（トップページ等）
   // ----------------------------------------------------
   if (!site) {
     const defaultMenu: MenuItem[] = [
@@ -33,11 +33,22 @@ export function MobileNavigation(props: Props) {
             },
           ]
         : []),
-      {
-        label: user?.name ?? "",
-        icon: user?.avator,
-        children: [{ label: "ログアウト", type: "logout" }],
-      },
+      ...(user
+        ? [
+            // 💡 ログイン時：children 内の type に as const を追加
+            {
+              label: user.name || "マイページ",
+              icon: user.avator,
+              children: [
+                { label: "ログアウト", type: "logout" as const }, // 👈 as const を追加
+              ],
+            },
+          ]
+        : [
+            // 💡 未ログイン時：type: "link" を指定
+            { label: "ログイン", href: "/login", type: "link" as const }, // 👈 type を明示
+            { label: "新規登録", href: "/signup", type: "link" as const }, // 👈 type を明示
+          ]),
     ];
     return (
       <nav className="flex h-full md:hidden items-center gap-4">
