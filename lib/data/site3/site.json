@@ -60,6 +60,7 @@
       {
         "id": "about",
         "type": "about",
+        "data": { "anchorId": "about" },
         "blocks": [
           {
             "id": "about-text",
