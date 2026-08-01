@@ -27,18 +27,18 @@ export default function Header(props: Props) {
 
   return (
     <div className="sticky top-0 z-50 flex flex-col">
-      {/* 1段目: システム操作・ログイン案内・編集ボタン */}
+      {/* 1段目: システム操作・ログイン状態表示・編集ボタン (userはここだけで使う) */}
       {showToolbar && (
         <Toolbar user={user} onOpenMenuEditor={onOpenMenuEditor} />
       )}
 
-      {/* 2段目: 純粋なサイトヘッダー（閲覧時も編集時も共通） */}
+      {/* 2段目: 純粋な店舗サイトヘッダー */}
       <header className="flex h-14 items-center justify-between border-b border-slate-100 bg-white px-4 text-sm text-gray-800 tracking-tight shadow-sm">
         <Logo site={site} />
 
-        {/* ナビゲーション本体はシンプルにデータだけを渡す */}
-        <PrimaryNavigation user={user} site={site} newsItems={newsItems} />
-        <MobileNavigation user={user} site={site} newsItems={newsItems} />
+        {/* 店舗メニューの描画に専念（userは渡さない） */}
+        <PrimaryNavigation site={site} newsItems={newsItems} />
+        <MobileNavigation site={site} newsItems={newsItems} />
       </header>
     </div>
   );

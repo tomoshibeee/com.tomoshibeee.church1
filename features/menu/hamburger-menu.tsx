@@ -1,37 +1,23 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { MenuItem } from "@/types/site-menu";
 import { NewsItem } from "@/features/block/news/types";
-import { supabase } from "@/lib/supabase";
-
 import { FaBars, FaXmark } from "react-icons/fa6";
 import { NewsModal } from "@/components/news/news-modal";
-
-import { LogoutButton } from "@/components/buttons/auth/index";
 
 type Props = {
   menu: MenuItem[];
   newsItems: NewsItem[];
 };
 
-export function HamburgerMenu(props: Props) {
-  const { menu, newsItems } = props;
+export function HamburgerMenu({ menu, newsItems }: Props) {
   const [isOpen, setIsOpen] = useState(false);
-
-  const router = useRouter();
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    setIsOpen(false);
-    router.push("/login");
-  };
 
   return (
     <>
-      {/* 🍔 トリガーとなる普通のハンバーガーボタン */}
+      {/* 🍔 トリガーボタン */}
       <button
         onClick={() => setIsOpen(true)}
         aria-label="メニューを開く"
@@ -40,16 +26,16 @@ export function HamburgerMenu(props: Props) {
         <FaBars />
       </button>
 
-      {/* 📱 メニュー本体（開いている時だけ表示） */}
+      {/* 📱 ドロワーメニュー本体 */}
       {isOpen && (
         <div className="fixed inset-0 z-50 flex">
-          {/* 背景の黒透明 */}
+          {/* 背景のオーバーレイ */}
           <div
             className="fixed inset-0 bg-black/40 transition-opacity"
             onClick={() => setIsOpen(false)}
           />
 
-          {/* 右側から出てくるグレーベースのメニューボード */}
+          {/* 右側スライドインボード */}
           <div className="relative ml-auto flex h-full w-[280px] flex-col bg-slate-50 p-6 shadow-xl animate-in slide-in-from-right duration-200">
             {/* 閉じるボタン */}
             <div className="flex justify-end mb-6">
@@ -62,37 +48,24 @@ export function HamburgerMenu(props: Props) {
               </button>
             </div>
 
-            {/* 階層メニュー一覧 */}
+            {/* メニュー一覧 */}
             <nav className="flex flex-col gap-5 overflow-y-auto pr-1">
               {menu.map((m: MenuItem, i: number) => {
                 const hasChildren = m.children && m.children.length > 0;
 
-                // 🔔 パターン1: お知らせメニューの場合（ポップアップさせない！）
+                // 🔔 お知らせメニューの場合
                 if (m.type === "news") {
                   return (
                     <div
                       key={`${i}-${m.label}`}
                       className="flex flex-col gap-2"
                     >
-                      {/* 💡 ポップアップを開くモーダルボタンに差し替え！ */}
                       <NewsModal newsItems={newsItems} label={m.label} />
                     </div>
                   );
                 }
 
-                // 🚪 パターン2: ログアウトボタンの場合
-                if (m.type === "logout") {
-                  return (
-                    <LogoutButton
-                      key={`${i}-${m.label}`}
-                      i={i}
-                      label={m.label}
-                      handleLogout={handleLogout}
-                    />
-                  );
-                }
-
-                // 🔗 パターン3: 通常のリンクや子メニューを持つ親
+                // 🔗 通常のリンクまたは階層メニュー
                 return (
                   <div key={`${i}-${m.label}`} className="flex flex-col gap-2">
                     {m.href ? (
@@ -116,17 +89,8 @@ export function HamburgerMenu(props: Props) {
                           <Link
                             key={`${m.label}-${i}-${c.label}-${j}`}
                             href={c.href || "#"}
-                            onClick={() => {
-                              setIsOpen(false);
-                              if (c.type === "logout") {
-                                handleLogout();
-                              }
-                            }}
-                            className={`block py-1.5 text-sm transition-colors ${
-                              c.type === "logout"
-                                ? "text-red-600 font-medium hover:text-red-700"
-                                : "text-gray-600 hover:text-gray-900"
-                            }`}
+                            onClick={() => setIsOpen(false)}
+                            className="block py-1.5 text-sm text-gray-600 hover:text-gray-900 transition-colors"
                           >
                             {c.label}
                           </Link>
