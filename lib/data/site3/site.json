@@ -32,6 +32,7 @@
       {
         "id": "hero",
         "type": "hero",
+        "data": { "anchorId": "hero" },
         "blocks": [
           {
             "id": "hero-main",
@@ -73,6 +74,7 @@
       {
         "id": "service",
         "type": "service",
+        "data": { "anchorId": "service" },
         "blocks": [
           {
             "id": "service-main",
@@ -101,6 +103,7 @@
       {
         "id": "site_news",
         "type": "site_news",
+        "data": { "anchorId": "site_news" },
         "blocks": [
           {
             "id": "news-main",
@@ -115,6 +118,7 @@
       {
         "id": "access",
         "type": "access",
+        "data": { "anchorId": "access" },
         "blocks": [
           {
             "id": "access-main",
@@ -126,6 +130,7 @@
       {
         "id": "contact",
         "type": "contact",
+        "data": { "anchorId": "contact" },
         "blocks": [
           {
             "id": "contact-main",

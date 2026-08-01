@@ -16,6 +16,7 @@ export function dummySiteSectionModelData(siteIds: string[]): SiteSection[] {
             site_id: siteId, 
             type: s.type as SectionType,
             display_order: i,
+            data: s.data,
             created_at: now,
             updated_at: now,
         }));

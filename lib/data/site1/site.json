@@ -32,6 +32,7 @@
       {
         "id": "hero",
         "type": "hero",
+        "data": { "anchorId": "hero" },
         "blocks": [
           {
             "id": "hero-simple",
@@ -40,7 +41,10 @@
             "data": {
               "title": "静岡の街角にある、小さなあたたかな教会",
               "images": [
-                { "url": "https://picsum.photos/1200/600", "alt": "教会外観イメージ" }
+                {
+                  "url": "https://picsum.photos/1200/600",
+                  "alt": "教会外観イメージ"
+                }
               ]
             }
           },
@@ -59,6 +63,7 @@
       {
         "id": "site_news",
         "type": "site_news",
+        "data": { "anchorId": "site_news" },
         "blocks": [
           {
             "id": "news-main",
@@ -73,6 +78,7 @@
       {
         "id": "about",
         "type": "about",
+        "data": { "anchorId": "about" },
         "blocks": [
           {
             "id": "greeting-main",
@@ -90,6 +96,7 @@
       {
         "id": "service",
         "type": "service",
+        "data": { "anchorId": "service" },
         "blocks": [
           {
             "id": "service-info1",
@@ -119,6 +126,7 @@
       {
         "id": "access",
         "type": "access",
+        "data": { "anchorId": "access" },
         "blocks": [
           {
             "id": "access-block",
@@ -130,6 +138,7 @@
       {
         "id": "contact",
         "type": "contact",
+        "data": { "anchorId": "contact" },
         "blocks": [
           {
             "id": "contact-main",

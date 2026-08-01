@@ -32,6 +32,7 @@
       {
         "id": "hero",
         "type": "hero",
+        "data": { "anchorId": "hero" },
         "blocks": [
           {
             "id": "hero-simple",
@@ -59,6 +60,7 @@
       {
         "id": "about",
         "type": "about",
+        "data": { "anchorId": "about" },
         "blocks": [
           {
             "id": "about-main",
@@ -73,6 +75,7 @@
       {
         "id": "products",
         "type": "service",
+        "data": { "anchorId": "products" },
         "blocks": [
           {
             "id": "products-list",
@@ -101,6 +104,7 @@
       {
         "id": "site_news",
         "type": "site_news",
+        "data": { "anchorId": "site_news" },
         "blocks": [
           {
             "id": "news-main",
@@ -115,6 +119,7 @@
       {
         "id": "access",
         "type": "access",
+        "data": { "anchorId": "access" },
         "blocks": [
           {
             "id": "access-block",
@@ -126,6 +131,7 @@
       {
         "id": "contact",
         "type": "contact",
+        "data": { "anchorId": "contact" },
         "blocks": [
           {
             "id": "contact-main",
