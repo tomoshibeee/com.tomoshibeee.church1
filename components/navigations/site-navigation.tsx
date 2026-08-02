@@ -10,11 +10,12 @@ import { MetaData } from "@/types/site-meta";
 import { MenuItem } from "@/types/site-menu";
 import { NewsItem } from "@/features/block/news/types";
 import { UserData } from "@/types/user";
+import { Section } from "@/features/section/types";
 
 type Props = {
   site: SiteData;
   newsItems: NewsItem[];
-  user?: UserData;  // 編集画面で必要
+  user?: UserData; // 編集画面で必要
 };
 
 export default function SiteNavigation(props: Props) {
@@ -97,7 +98,7 @@ export default function SiteNavigation(props: Props) {
 
   const handleUpdateSection = (
     sectionId: string,
-    updatedFields: Record<string, any>,
+    updatedFields: Partial<Omit<Section, "id" | "blocks">>,
   ) => {
     setSite((prevSite) => {
       const nextSections = prevSite.layout.sections.map((section) => {
@@ -105,8 +106,16 @@ export default function SiteNavigation(props: Props) {
           return {
             ...section,
             ...updatedFields,
+            // data が渡されていれば既存の data とマージする
+            ...(updatedFields.data && {
+              data: {
+                ...section.data,
+                ...updatedFields.data,
+              },
+            }),
           };
         }
+        // console.log("🚦Section:", section); // デバッグ用ログ
         return section;
       });
 
@@ -119,7 +128,6 @@ export default function SiteNavigation(props: Props) {
       };
     });
   };
-
   return (
     <>
       <ImagePickerProvider>
