@@ -9,16 +9,16 @@ import { MenuModal } from "@/features/menu/components/menu-modal";
 import { MetaData } from "@/types/site-meta";
 import { MenuItem } from "@/types/site-menu";
 import { NewsItem } from "@/features/block/news/types";
+import { UserData } from "@/types/user";
 
 type Props = {
   site: SiteData;
   newsItems: NewsItem[];
+  user?: UserData;  // 編集画面で必要
 };
 
-export default function SiteNavigation({
-  site: initialSite,
-  newsItems,
-}: Props) {
+export default function SiteNavigation(props: Props) {
+  const { site: initialSite, newsItems, user } = props;
   const [site, setSite] = useState<SiteData>(initialSite);
 
   // ⭕️ 各モーダルの開閉状態を個別に管理
@@ -28,7 +28,10 @@ export default function SiteNavigation({
   // 💡 編集中のサイトデータを localStorage に同期
   useEffect(() => {
     if (site?.meta?.site_id) {
-      localStorage.setItem(`preview-${site.meta.site_id}`, JSON.stringify(site));
+      localStorage.setItem(
+        `preview-${site.meta.site_id}`,
+        JSON.stringify(site),
+      );
     }
   }, [site]);
 
@@ -122,6 +125,7 @@ export default function SiteNavigation({
       <ImagePickerProvider>
         <Template
           site={site}
+          user={user}
           mode="edit"
           newsItems={newsItems}
           onUpdateBlock={handleUpdateBlock}
