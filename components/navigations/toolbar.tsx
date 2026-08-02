@@ -12,7 +12,6 @@ type Props = {
 export function Toolbar({ user, onOpenMenuEditor }: Props) {
   const router = useRouter();
 
-  // 未ログイン時に編集ボタンを押した際のログイン誘導処理
   const handleEditClick = () => {
     if (!user) {
       if (
@@ -29,39 +28,69 @@ export function Toolbar({ user, onOpenMenuEditor }: Props) {
   };
 
   return (
-    <div className="bg-slate-900 text-white text-xs px-4 h-9 flex items-center justify-between z-50 shadow-sm">
-      {/* 👈 左側: ステータス表示 */}
-      <div className="flex items-center gap-2">
+    <div className="bg-slate-900/95 backdrop-blur-md border-b border-slate-800/80 text-white text-xs px-4 h-10 flex items-center justify-between z-50 shadow-sm sticky top-0">
+      {/* 左側: ステータス表示 */}
+      <div className="flex items-center gap-2.5">
         <span
-          className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-            user ? "bg-blue-600 text-white" : "bg-amber-500 text-slate-900"
+          className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium tracking-wide ${
+            user
+              ? "bg-blue-500/10 text-blue-400 border border-blue-500/20"
+              : "bg-amber-500/10 text-amber-400 border border-amber-500/20"
           }`}
         >
+          <span
+            className={`w-1.5 h-1.5 rounded-full mr-1.5 ${
+              user ? "bg-blue-400 animate-pulse" : "bg-amber-400"
+            }`}
+          />
           {user ? "ログイン中" : "ゲスト閲覧中"}
         </span>
-        <span className="text-slate-300 hidden sm:inline text-[11px]">
-          {user
-            ? `ログインユーザー: ${user.name}`
-            : "ログインすると自分だけのショップサイトを作成・編集できます"}
+
+        <span className="text-slate-400 hidden sm:inline text-[11px] font-normal truncate max-w-[280px] md:max-w-none">
+          {user ? (
+            <>
+              ログインユーザー:{" "}
+              <span className="text-slate-200 font-medium">{user.name}</span>
+            </>
+          ) : (
+            "ログインすると自分だけのショップサイトを作成・編集できます"
+          )}
         </span>
       </div>
 
-      {/* 👉 右側: アクションボタン類 */}
+      {/* 右側: アクションボタン類 */}
       <div className="flex items-center gap-2">
-        {/* メニュー編集ボタン（関数が渡されている場合のみ表示） */}
         {onOpenMenuEditor && (
           <button
             type="button"
             onClick={handleEditClick}
-            className="bg-slate-800 hover:bg-slate-700 text-slate-100 px-2.5 py-1 rounded transition-colors flex items-center gap-1 cursor-pointer border border-slate-700"
+            className="group inline-flex items-center gap-1.5 bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 hover:text-white px-3 py-1 rounded-md text-xs font-medium transition-all duration-150 border border-slate-700/60 shadow-xs cursor-pointer focus:outline-none focus:ring-2 focus:ring-slate-400/20 active:scale-95"
           >
-            ⚙️ メニュー編集
+            <svg
+              className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-200 transition-colors group-hover:rotate-45 transition-transform duration-300"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+              />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+            </svg>
+            <span>メニュー編集</span>
           </button>
         )}
 
-        {/* ログイン・新規登録導線（未ログイン時のみ表示） */}
         {!user && (
-          <div className="flex items-center gap-1.5 ml-1">
+          <div className="flex items-center gap-1.5 pl-1 border-l border-slate-800">
             <LoginButton />
             <SignupButton />
           </div>
