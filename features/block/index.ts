@@ -23,7 +23,11 @@ export type Block =
   | CtaBlockType
   | ContactBlockType;
 
-export type BlockData =
+export type BaseBlockData = {
+  anchorId: string;
+};
+
+export type BlockData = BaseBlockData & (
   | HeroBlockData
   | GreetingBlockData
   | ServiceBlockData    
@@ -31,4 +35,4 @@ export type BlockData =
   | AccessBlockData
   | CtaBlockData
   | ContactBlockData
-  | Record<string, any>;
+);

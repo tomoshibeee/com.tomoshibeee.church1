@@ -22,6 +22,7 @@ import {
   ServiceBlockType,
   ContactBlockType,
 } from "@/features/block/index";
+
 interface Props {
   meta: MetaData;
   block: Block;
@@ -29,6 +30,7 @@ interface Props {
   onOpenMetaEditor: () => void;
   mode?: SiteMode;
 }
+
 type BlockRendererMap = {
   hero: (
     block: HeroBlockType,
@@ -99,14 +101,20 @@ const blockRegistry: BlockRendererMap = {
     );
   },
 
-  news: (block, _meta, _onUpdateBlock, onOpenMetaEditor, mode) => {
+  news: (block, _meta, _onUpdateBlock, _onOpenMetaEditor, mode) => {
     if (block.type !== "news") return {} as JSX.Element;
     return <NewsBlock {...block.data} mode={mode} />;
   },
 
   greeting: (block, _meta, onUpdateBlock, _onOpenMetaEditor, mode) => {
     if (block.type !== "greeting") return {} as JSX.Element;
-    return <GreetingBlock {...block.data} onUpdateBlock={onUpdateBlock} mode={mode} />;
+    return (
+      <GreetingBlock
+        {...block.data}
+        onUpdateBlock={onUpdateBlock}
+        mode={mode}
+      />
+    );
   },
 
   service: (block, _meta, _onUpdateBlock, _onOpenMetaEditor, mode) => {
@@ -114,12 +122,21 @@ const blockRegistry: BlockRendererMap = {
   },
 
   contact: (block, meta, _onUpdateBlock, onOpenMetaEditor, mode) => {
-    return <ContactBlock {...block.data} meta={meta} onOpenMetaEditor={onOpenMetaEditor} mode={mode} />;
+    return (
+      <ContactBlock
+        {...block.data}
+        meta={meta}
+        onOpenMetaEditor={onOpenMetaEditor}
+        mode={mode}
+      />
+    );
   },
 
   access: (_block, meta, _onUpdateBlock, onOpenMetaEditor, mode) => {
     if (!meta) throw new Error("meta missing");
-    return <AccessBlock {...meta} onOpenMetaEditor={onOpenMetaEditor} mode={mode} />;
+    return (
+      <AccessBlock {...meta} onOpenMetaEditor={onOpenMetaEditor} mode={mode} />
+    );
   },
 
   cta: (block, _meta, _onUpdateBlock, _onOpenMetaEditor, mode) => {
@@ -134,13 +151,50 @@ export default function BlockRenderer(props: Props) {
 
   if (!render) return null;
 
+  const isEdit = mode === "edit";
+
+  // 💡 block.data.anchorId を優先して参照
+  const anchorId = (block.data as any)?.anchorId;
+
   const handleUpdateFields = (updatedData: Record<string, any>) => {
     if (block.id) {
       onUpdateBlock(block.id, updatedData);
     }
   };
 
-  const content = render(block as any, meta, handleUpdateFields, onOpenMetaEditor, mode);
+  // ✍️ anchorId の変更を data オブジェクト内に更新して親に伝える
+  const handleAnchorIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleUpdateFields({
+      ...block.data,
+      anchorId: e.target.value,
+    });
+  };
 
-  return <div>{content}</div>;
+  const content = render(
+    block as any,
+    meta,
+    handleUpdateFields,
+    onOpenMetaEditor,
+    mode,
+  );
+
+  return (
+    <section id={anchorId} className="relative scroll-mt-20">
+      {/* 💡 editモード時：右上オーバーレイ入力欄 */}
+      {isEdit && (
+        <div className="absolute right-3 top-3 z-30 flex items-center gap-1 rounded-2xl bg-slate-900/80 px-2.5 py-1 text-xs text-white shadow-md backdrop-blur-sm">
+          <span className="font-mono text-slate-400">#</span>
+          <input
+            type="text"
+            value={anchorId ?? ""}
+            onChange={handleAnchorIdChange}
+            placeholder={block.type || "block"}
+            className="w-28 border-b border-white/30 bg-transparent font-mono text-xs text-white placeholder-slate-400 focus:border-white focus:outline-none"
+          />
+        </div>
+      )}
+
+      {content}
+    </section>
+  );
 }
