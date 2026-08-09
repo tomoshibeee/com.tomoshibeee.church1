@@ -1,4 +1,5 @@
 import { BlockData } from "@/features/block/index";
+import { BlockType } from "@/models/master-block";
 
 export type SiteBlock = {
     id: string;
@@ -11,4 +12,3 @@ export type SiteBlock = {
     updated_at: string;
 };
 
-export type BlockType = "hero" | "products" | "site_news" | "about" | "service" | "access" | "contact";
