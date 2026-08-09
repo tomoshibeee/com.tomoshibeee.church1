@@ -6,11 +6,14 @@ import { SiteData } from "@/types/site";
 import { ImagePickerProvider } from "@/components/image-picker";
 import { MetaModal } from "@/features/meta/components/meta-modal";
 import { MenuModal } from "@/features/menu/components/menu-modal";
+import { BlockModal } from "@/features/block/components/block-modal"; // 👈 ブロック追加モーダル
 import { MetaData } from "@/types/site-meta";
 import { MenuItem } from "@/types/site-menu";
 import { NewsItem } from "@/features/block/news/types";
 import { UserData } from "@/types/user";
 import { Section } from "@/features/section/types";
+import { MasterBlock } from "@/models/master-block"; // 👈 追加
+import { getMasterBlocks } from "@/services/master-block-service";
 
 type Props = {
   site: SiteData;
@@ -22,11 +25,12 @@ export default function SiteNavigation(props: Props) {
   const { site: initialSite, newsItems, user } = props;
   const [site, setSite] = useState<SiteData>(initialSite);
 
-  // ⭕️ 各モーダルの開閉状態を個別に管理
+  // 各モーダルの開閉状態を個別に管理
   const [isMetaOpen, setIsMetaOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isBlockModalOpen, setIsBlockModalOpen] = useState(false); // 👈 ブロック追加モーダル用
 
-  // 💡 編集中のサイトデータを localStorage に同期
+  // 編集中のサイトデータを localStorage に同期
   useEffect(() => {
     if (site?.meta?.site_id) {
       localStorage.setItem(
@@ -36,7 +40,7 @@ export default function SiteNavigation(props: Props) {
     }
   }, [site]);
 
-  // ⭕️ 基本情報の保存（ネストのバグを修正）
+  // 基本情報の保存
   const handleSaveMeta = async (updatedMeta: MetaData) => {
     setSite((prevSite) => ({
       ...prevSite,
@@ -47,17 +51,15 @@ export default function SiteNavigation(props: Props) {
     }));
   };
 
-  // ⭕️ メニューの保存（関数としてきれいに分離）
+  // メニューの保存
   const handleSaveMenu = async (updatedMenu: MenuItem[]) => {
     setSite((prevSite) => ({
       ...prevSite,
       navigation: {
-        ...prevSite.navigation, // navigationオブジェクトの他の設定（あれば）を維持
-        menu: updatedMenu, // 👈 ここで最新のメニュー配列に丸ごと差し替える！
+        ...prevSite.navigation,
+        menu: updatedMenu,
       },
     }));
-
-    // ※ 将来的にDBへ保存するAPIを叩く場合はここに追記します
   };
 
   // 💡 ブロックのデータ更新処理
@@ -85,7 +87,6 @@ export default function SiteNavigation(props: Props) {
           blocks: nextBlocks,
         };
       });
-
       return {
         ...prevSite,
         layout: {
@@ -94,6 +95,52 @@ export default function SiteNavigation(props: Props) {
         },
       };
     });
+  };
+
+  // ➕ マスターから最新データを取得して SiteBlock を生成・追加する処理
+  const handleAddBlockFromMaster = async (masterBlock: MasterBlock) => {
+    // try {
+    //   // 1. マスターから最新のブロック一覧を取得
+    //   const masterBlocks = await getMasterBlocks();
+    //   // 選択された type に一致する最新のマスターデータを取得（見つからなければ渡されたものを使用）
+    //   const latestMasterBlock =
+    //     masterBlocks.find((b) => b.type === masterBlock.type) ?? masterBlock;
+    //   // 2. ステートの更新
+    //   setSite((prevSite) => {
+    //     const sections = prevSite.layout?.sections ?? [];
+    //     // 対象のセクション（末尾のセクション、無ければそのまま返す）
+    //     const targetSectionIndex =
+    //       sections.length > 0 ? sections.length - 1 : 0;
+    //     const targetSection = sections[targetSectionIndex];
+    //     if (!targetSection) return prevSite;
+    //     // 最新のマスターデータから新しい SiteBlock を生成
+    //     const currentBlockCount = targetSection.blocks?.length ?? 0;
+    //     const newBlock = buildSiteBlockFromMaster(
+    //       targetSection.id,
+    //       latestMasterBlock,
+    //       currentBlockCount,
+    //     );
+    //     // セクション配列の更新
+    //     const updatedSections = sections.map((sec, idx) => {
+    //       if (idx === targetSectionIndex) {
+    //         return {
+    //           ...sec,
+    //           blocks: [...(sec.blocks ?? []), newBlock],
+    //         };
+    //       }
+    //       return sec;
+    //     });
+    //     return {
+    //       ...prevSite,
+    //       layout: {
+    //         ...prevSite.layout,
+    //         sections: updatedSections,
+    //       },
+    //     };
+    //   });
+    // } catch (error) {
+    //   console.error("Failed to fetch master blocks on adding:", error);
+    // }
   };
 
   const handleUpdateSection = (
@@ -106,7 +153,6 @@ export default function SiteNavigation(props: Props) {
           return {
             ...section,
             ...updatedFields,
-            // data が渡されていれば既存の data とマージする
             ...(updatedFields.data && {
               data: {
                 ...section.data,
@@ -115,7 +161,6 @@ export default function SiteNavigation(props: Props) {
             }),
           };
         }
-        // console.log("🚦Section:", section); // デバッグ用ログ
         return section;
       });
 
@@ -128,6 +173,7 @@ export default function SiteNavigation(props: Props) {
       };
     });
   };
+
   return (
     <>
       <ImagePickerProvider>
@@ -140,6 +186,7 @@ export default function SiteNavigation(props: Props) {
           onUpdateSection={handleUpdateSection}
           onOpenMetaEditor={() => setIsMetaOpen(true)}
           onOpenMenuEditor={() => setIsMenuOpen(true)}
+          onOpenBlockEditor={() => setIsBlockModalOpen(true)} // 👈 Template（Toolbar）へ伝達
         />
       </ImagePickerProvider>
 
@@ -151,12 +198,19 @@ export default function SiteNavigation(props: Props) {
         onSave={handleSaveMeta}
       />
 
-      {/* ⭕️ ナビゲーションメニュー編集モーダル */}
+      {/* ナビゲーションメニュー編集モーダル */}
       <MenuModal
-        isOpen={isMenuOpen} // 👈 専用のステートに変更
+        isOpen={isMenuOpen}
         onClose={() => setIsMenuOpen(false)}
         initialData={site.navigation?.menu ?? []}
-        onSave={handleSaveMenu} // 👈 上で定義した関数をスッキリ指定
+        onSave={handleSaveMenu}
+      />
+
+      {/* ➕ ブロック追加モーダル */}
+      <BlockModal
+        isOpen={isBlockModalOpen}
+        onClose={() => setIsBlockModalOpen(false)}
+        onSelectBlock={handleAddBlockFromMaster}
       />
     </>
   );

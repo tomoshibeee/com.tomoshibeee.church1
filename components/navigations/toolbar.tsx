@@ -7,16 +7,17 @@ import { LoginButton, SignupButton } from "@/components/buttons/auth";
 type Props = {
   user?: UserData;
   onOpenMenuEditor?: () => void;
+  onOpenBlockEditor?: () => void; // ブロック編集モーダル等を開くコールバックを追加
 };
 
-export function Toolbar({ user, onOpenMenuEditor }: Props) {
+export function Toolbar({ user, onOpenMenuEditor, onOpenBlockEditor }: Props) {
   const router = useRouter();
 
-  const handleEditClick = () => {
+  const handleAuthCheck = (action?: () => void) => {
     if (!user) {
       if (
         confirm(
-          "メニューを編集するにはログインが必要です。ログイン画面へ移動しますか？"
+          "編集機能を利用するにはログインが必要です。ログイン画面へ移動しますか？",
         )
       ) {
         router.push("/login");
@@ -24,7 +25,7 @@ export function Toolbar({ user, onOpenMenuEditor }: Props) {
       return;
     }
 
-    onOpenMenuEditor?.();
+    action?.();
   };
 
   return (
@@ -60,10 +61,35 @@ export function Toolbar({ user, onOpenMenuEditor }: Props) {
 
       {/* 右側: アクションボタン類 */}
       <div className="flex items-center gap-2">
+        {/* ブロック追加/編集ボタン */}
+        {onOpenBlockEditor && (
+          <button
+            type="button"
+            onClick={() => handleAuthCheck(onOpenBlockEditor)}
+            className="group inline-flex items-center gap-1.5 bg-blue-600/80 hover:bg-blue-500/80 text-white px-3 py-1 rounded-md text-xs font-medium transition-all duration-150 border border-blue-500/60 shadow-xs cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400/20 active:scale-95"
+          >
+            <svg
+              className="w-3.5 h-3.5 text-blue-200 group-hover:text-white transition-colors"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
+            <span>ブロック追加</span>
+          </button>
+        )}
+
+        {/* メニュー編集ボタン */}
         {onOpenMenuEditor && (
           <button
             type="button"
-            onClick={handleEditClick}
+            onClick={() => handleAuthCheck(onOpenMenuEditor)}
             className="group inline-flex items-center gap-1.5 bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 hover:text-white px-3 py-1 rounded-md text-xs font-medium transition-all duration-150 border border-slate-700/60 shadow-xs cursor-pointer focus:outline-none focus:ring-2 focus:ring-slate-400/20 active:scale-95"
           >
             <svg

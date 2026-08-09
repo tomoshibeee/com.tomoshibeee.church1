@@ -15,10 +15,11 @@ type Props = {
   user?: UserData;
   newsItems: NewsItem[];
   onOpenMenuEditor?: () => void;
+  onOpenBlockEditor?: () => void; // ブロック編集モーダル等を開くコールバックを追加
 };
 
 export default function Header(props: Props) {
-  const { site, user, newsItems, onOpenMenuEditor } = props;
+  const { site, user, newsItems, onOpenMenuEditor, onOpenBlockEditor } = props;
   const pathname = usePathname();
   const isDashboard = pathname?.startsWith("/dashboard");
 
@@ -29,7 +30,11 @@ export default function Header(props: Props) {
     <div className="sticky top-0 z-50 flex flex-col">
       {/* 1段目: システム操作・ログイン状態表示・編集ボタン (userはここだけで使う) */}
       {showToolbar && (
-        <Toolbar user={user} onOpenMenuEditor={onOpenMenuEditor} />
+        <Toolbar
+          user={user}
+          onOpenMenuEditor={onOpenMenuEditor}
+          onOpenBlockEditor={onOpenBlockEditor}
+        />
       )}
 
       {/* 2段目: 純粋な店舗サイトヘッダー */}

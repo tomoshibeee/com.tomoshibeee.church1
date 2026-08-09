@@ -20,6 +20,7 @@ type Props = {
   ) => void;
   onOpenMetaEditor?: () => void;
   onOpenMenuEditor?: () => void;
+  onOpenBlockEditor?: () => void; // ブロック編集モーダル等を開くコールバックを追加
 };
 
 export default function Template(props: Props) {
@@ -32,6 +33,7 @@ export default function Template(props: Props) {
     onUpdateSection,
     onOpenMetaEditor,
     onOpenMenuEditor,
+    onOpenBlockEditor,
   } = props;
   const sections = site?.layout?.sections;
 
@@ -42,6 +44,7 @@ export default function Template(props: Props) {
         newsItems={newsItems}
         user={user}
         onOpenMenuEditor={onOpenMenuEditor}
+        onOpenBlockEditor={onOpenBlockEditor}
       />
 
       {sections?.map(
