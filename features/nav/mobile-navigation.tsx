@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation"; // 👈 追加
 import { HamburgerMenu } from "@/features/menu/hamburger-menu";
 import { LinkButtonHeader } from "@/components/buttons/link-button";
 import { ShareButtonHeader } from "@/components/buttons/share-button";
@@ -17,6 +18,8 @@ type Props = {
 
 export function MobileNavigation(props: Props) {
   const { site, user, newsItems, onOpenMenuEditor } = props;
+  const pathname = usePathname(); // 👈 現在のパスを取得
+  const isDashboard = pathname?.startsWith("/dashboard"); // 👈 ダッシュボード内かどうかの判定
 
   // ----------------------------------------------------
   // パターンA: ポータル時（site がない場合）
@@ -33,11 +36,21 @@ export function MobileNavigation(props: Props) {
             },
           ]
         : []),
-      // 💡 ポータルで未ログインの時のみログイン関連の項目を追加
+      // 未ログイン時：ログイン / 新規登録
       ...(!user
         ? [
             { label: "ログイン", href: "/login", type: "link" as const },
             { label: "新規登録", href: "/signup", type: "link" as const },
+          ]
+        : []),
+      // 💡 ログイン済み、かつダッシュボード「以外」のページにいる時のみ表示
+      ...(user && !isDashboard
+        ? [
+            {
+              label: "ダッシュボード",
+              href: "/dashboard",
+              type: "link" as const,
+            },
           ]
         : []),
     ];
@@ -52,7 +65,6 @@ export function MobileNavigation(props: Props) {
   // ----------------------------------------------------
   // パターンB: 店舗サイト時（site がある場合）
   // ----------------------------------------------------
-  // 店舗サイトのメニューのみを使用（ログイン・マイページ項目は含めない）
   const displayMenu: MenuItem[] = [...(site.navigation?.menu ?? [])];
 
   const sortedSocialLinks = [...(site?.socialLinks ?? [])].sort(

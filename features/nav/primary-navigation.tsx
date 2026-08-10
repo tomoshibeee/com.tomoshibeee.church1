@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation"; // 👈 追加
 import { DropDownMenu } from "../menu/drop-down-menu";
 import { LinkButtonHeader } from "@/components/buttons/link-button";
 import { ShareButtonHeader } from "@/components/buttons/share-button";
@@ -16,6 +17,8 @@ type Props = {
 
 export function PrimaryNavigation(props: Props) {
   const { site, user, newsItems } = props;
+  const pathname = usePathname(); // 👈 現在のパスを取得
+  const isDashboard = pathname?.startsWith("/dashboard"); // 👈 ダッシュボード内判定
 
   // 1. ポータル時（site がない場合）
   if (!site) {
@@ -26,7 +29,7 @@ export function PrimaryNavigation(props: Props) {
           newsItems={newsItems}
         />
 
-        {/* 💡 ポータルで、かつ未ログインの時だけログインボタンを表示 */}
+        {/* 💡 未ログイン時: ログインボタン */}
         {!user && (
           <>
             <div className="h-4 w-px bg-slate-200" />
@@ -38,11 +41,24 @@ export function PrimaryNavigation(props: Props) {
             </Link>
           </>
         )}
+
+        {/* 💡 ログイン済み、かつダッシュボード外の時だけダッシュボードボタンを表示 */}
+        {user && !isDashboard && (
+          <>
+            <div className="h-4 w-px bg-slate-200" />
+            <Link
+              href="/dashboard"
+              className="rounded-full bg-slate-800 px-3.5 py-1.5 text-xs font-medium text-white transition-colors hover:bg-slate-700"
+            >
+              ダッシュボード
+            </Link>
+          </>
+        )}
       </nav>
     );
   }
 
-  // 2. 店舗サイト時（site がある場合）: ログインボタンは出さない
+  // 2. 店舗サイト時（site がある場合）: ログイン・ダッシュボードボタンは出さない
   const displayMenu = [...(site.navigation?.menu ?? [])];
 
   const sortedSocialLinks = [...(site.socialLinks ?? [])].sort(
