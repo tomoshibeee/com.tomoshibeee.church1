@@ -19,7 +19,7 @@ export function MobileNavigation(props: Props) {
   const { site, user, newsItems, onOpenMenuEditor } = props;
 
   // ----------------------------------------------------
-  // パターンA: 完全に初期状態などで site すらない場合のフォールバック（トップページ等）
+  // パターンA: ポータル時（site がない場合）
   // ----------------------------------------------------
   if (!site) {
     const defaultMenu: MenuItem[] = [
@@ -33,39 +33,27 @@ export function MobileNavigation(props: Props) {
             },
           ]
         : []),
-      ...(user
+      // 💡 ポータルで未ログインの時のみログイン関連の項目を追加
+      ...(!user
         ? [
-            // 💡 ログイン時：children 内の type に as const を追加
-            {
-              label: user.name || "マイページ",
-              icon: user.avator,
-              children: [
-                { label: "ログアウト", type: "logout" as const }, // 👈 as const を追加
-              ],
-            },
+            { label: "ログイン", href: "/login", type: "link" as const },
+            { label: "新規登録", href: "/signup", type: "link" as const },
           ]
-        : [
-            // 💡 未ログイン時：type: "link" を指定
-            { label: "ログイン", href: "/login", type: "link" as const }, // 👈 type を明示
-            { label: "新規登録", href: "/signup", type: "link" as const }, // 👈 type を明示
-          ]),
+        : []),
     ];
+
     return (
-      <nav className="flex h-full md:hidden items-center gap-4">
+      <nav className="flex h-full items-center gap-4 md:hidden">
         <HamburgerMenu menu={defaultMenu} newsItems={newsItems} />
       </nav>
     );
   }
 
   // ----------------------------------------------------
-  // パターンB: 通常時（/dashboard/[site_id] も含む、site がある状態）
+  // パターンB: 店舗サイト時（site がある場合）
   // ----------------------------------------------------
-
-  // ⭕️ 公開サイトの純粋なメニュー配列をそのまま使う
-  const displayMenu = site.navigation?.menu ?? [];
-
-  // ✂️ 【削除】if (onOpenMenuEditor) { displayMenu.push(...) } の処理を完全に撤去！
-  // これにより、ハンバーガーメニューの末尾に「メニュー編集 ⚙️」が勝手に付くのを防ぎます。
+  // 店舗サイトのメニューのみを使用（ログイン・マイページ項目は含めない）
+  const displayMenu: MenuItem[] = [...(site.navigation?.menu ?? [])];
 
   const sortedSocialLinks = [...(site?.socialLinks ?? [])].sort(
     (a, b) => a.display_order - b.display_order,
@@ -73,33 +61,33 @@ export function MobileNavigation(props: Props) {
   const headerSocialLinks = sortedSocialLinks.slice(0, 2);
 
   return (
-    <nav className="flex h-full md:hidden items-center gap-3">
-      {/* SNSリンクの塊 */}
+    <nav className="flex h-full items-center gap-3 md:hidden">
+      {/* SNSリンク */}
       <div className="flex items-center gap-1">
         {headerSocialLinks.map((item) => (
           <LinkButtonHeader key={item.id} item={item} />
         ))}
       </div>
 
-      {/* 📐 仕切り線 */}
+      {/* 仕切り線 */}
       <div className="h-4 w-px bg-slate-200" />
 
       {/* 共有ボタン */}
       <ShareButtonHeader />
 
-      {/* ⭕️ メニュー編集はこの直生の「⚙️」ボタンだけでスマートに担当！ */}
+      {/* メニュー編集ボタン（編集モード時） */}
       {onOpenMenuEditor && (
         <button
           type="button"
           onClick={onOpenMenuEditor}
-          className="rounded-lg bg-blue-50 p-2 text-blue-600 hover:bg-blue-100 transition-colors cursor-pointer flex items-center justify-center"
+          className="flex cursor-pointer items-center justify-center rounded-lg bg-blue-50 p-2 text-blue-600 transition-colors hover:bg-blue-100"
           title="メニュー編集"
         >
           <span className="text-base leading-none">⚙️</span>
         </button>
       )}
 
-      {/* ハンバーガーメニュー（純粋なサイトメニューだけが渡り、かつリアルタイムに更新される） */}
+      {/* ハンバーガーメニュー */}
       <HamburgerMenu
         key={JSON.stringify(displayMenu)}
         menu={displayMenu}

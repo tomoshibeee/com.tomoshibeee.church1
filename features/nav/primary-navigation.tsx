@@ -1,41 +1,57 @@
 "use client";
 
+import Link from "next/link";
 import { DropDownMenu } from "../menu/drop-down-menu";
 import { LinkButtonHeader } from "@/components/buttons/link-button";
 import { ShareButtonHeader } from "@/components/buttons/share-button";
 import { SiteData } from "@/types/site";
+import { UserData } from "@/types/user";
 import { NewsItem } from "@/features/block/news/types";
 
 type Props = {
   site?: SiteData;
+  user?: UserData;
   newsItems: NewsItem[];
 };
 
 export function PrimaryNavigation(props: Props) {
-  const { site, newsItems } = props;
+  const { site, user, newsItems } = props;
 
-  // site がない場合（初期状態など）は「お知らせ」メニューのみを表示
+  // 1. ポータル時（site がない場合）
   if (!site) {
     return (
-      <nav className="hidden h-full md:flex items-center gap-4">
+      <nav className="hidden h-full items-center gap-4 md:flex">
         <DropDownMenu
           menu={[{ label: "お知らせ", type: "news" }]}
           newsItems={newsItems}
         />
+
+        {/* 💡 ポータルで、かつ未ログインの時だけログインボタンを表示 */}
+        {!user && (
+          <>
+            <div className="h-4 w-px bg-slate-200" />
+            <Link
+              href="/login"
+              className="rounded-full bg-blue-600 px-3.5 py-1.5 text-xs font-medium text-white shadow-xs transition-colors hover:bg-blue-700"
+            >
+              ログイン
+            </Link>
+          </>
+        )}
       </nav>
     );
   }
 
-  // 通常時（site がある状態）
+  // 2. 店舗サイト時（site がある場合）: ログインボタンは出さない
   const displayMenu = [...(site.navigation?.menu ?? [])];
 
   const sortedSocialLinks = [...(site.socialLinks ?? [])].sort(
-    (a, b) => a.display_order - b.display_order
+    (a, b) => a.display_order - b.display_order,
   );
   const headerSocialLinks = sortedSocialLinks.slice(0, 2);
 
   return (
-    <nav className="hidden h-full md:flex items-center gap-4">
+    <nav className="hidden h-full items-center gap-4 md:flex">
       <DropDownMenu
         key={JSON.stringify(displayMenu)}
         menu={displayMenu}

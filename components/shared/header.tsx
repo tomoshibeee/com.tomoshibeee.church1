@@ -15,7 +15,7 @@ type Props = {
   user?: UserData;
   newsItems: NewsItem[];
   onOpenMenuEditor?: () => void;
-  onOpenBlockEditor?: () => void; // ブロック編集モーダル等を開くコールバックを追加
+  onOpenBlockEditor?: () => void;
 };
 
 export default function Header(props: Props) {
@@ -28,7 +28,7 @@ export default function Header(props: Props) {
 
   return (
     <div className="sticky top-0 z-50 flex flex-col">
-      {/* 1段目: システム操作・ログイン状態表示・編集ボタン (userはここだけで使う) */}
+      {/* 1段目: システム操作・ログイン状態表示・編集ボタン */}
       {showToolbar && (
         <Toolbar
           user={user}
@@ -38,12 +38,17 @@ export default function Header(props: Props) {
       )}
 
       {/* 2段目: 純粋な店舗サイトヘッダー */}
-      <header className="flex h-14 items-center justify-between border-b border-slate-100 bg-white px-4 text-sm text-gray-800 tracking-tight shadow-sm">
+      <header className="flex h-14 items-center justify-between border-b border-slate-100 bg-white px-4 text-sm tracking-tight text-gray-800 shadow-sm">
         <Logo site={site} />
 
-        {/* 店舗メニューの描画に専念（userは渡さない） */}
-        <PrimaryNavigation site={site} newsItems={newsItems} />
-        <MobileNavigation site={site} newsItems={newsItems} />
+        {/* 💡 PC・SPそれぞれに user 情報を引き渡してログインボタン等の切り替えに対応 */}
+        <PrimaryNavigation site={site} user={user} newsItems={newsItems} />
+        <MobileNavigation
+          site={site}
+          user={user}
+          newsItems={newsItems}
+          onOpenMenuEditor={onOpenMenuEditor}
+        />
       </header>
     </div>
   );
