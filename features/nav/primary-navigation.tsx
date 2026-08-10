@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation"; // 👈 追加
+import { usePathname } from "next/navigation";
 import { DropDownMenu } from "../menu/drop-down-menu";
 import { LinkButtonHeader } from "@/components/buttons/link-button";
 import { ShareButtonHeader } from "@/components/buttons/share-button";
@@ -17,8 +17,8 @@ type Props = {
 
 export function PrimaryNavigation(props: Props) {
   const { site, user, newsItems } = props;
-  const pathname = usePathname(); // 👈 現在のパスを取得
-  const isDashboard = pathname?.startsWith("/dashboard"); // 👈 ダッシュボード内判定
+  const pathname = usePathname();
+  const isDashboard = pathname?.startsWith("/dashboard");
 
   // 1. ポータル時（site がない場合）
   if (!site) {
@@ -29,7 +29,7 @@ export function PrimaryNavigation(props: Props) {
           newsItems={newsItems}
         />
 
-        {/* 💡 未ログイン時: ログインボタン */}
+        {/* 未ログイン時: ログインボタン */}
         {!user && (
           <>
             <div className="h-4 w-px bg-slate-200" />
@@ -42,15 +42,29 @@ export function PrimaryNavigation(props: Props) {
           </>
         )}
 
-        {/* 💡 ログイン済み、かつダッシュボード外の時だけダッシュボードボタンを表示 */}
-        {user && !isDashboard && (
+        {/* ログイン済み時 */}
+        {user && (
           <>
+            {/* ダッシュボード外にいる時だけダッシュボードリンクを表示 */}
+            {!isDashboard && (
+              <>
+                <div className="h-4 w-px bg-slate-200" />
+                <Link
+                  href="/dashboard"
+                  className="rounded-full bg-slate-800 px-3.5 py-1.5 text-xs font-medium text-white transition-colors hover:bg-slate-700"
+                >
+                  ダッシュボード
+                </Link>
+              </>
+            )}
+
+            {/* ログアウトボタン（少し控えめなスタイルに調整） */}
             <div className="h-4 w-px bg-slate-200" />
             <Link
-              href="/dashboard"
-              className="rounded-full bg-slate-800 px-3.5 py-1.5 text-xs font-medium text-white transition-colors hover:bg-slate-700"
+              href="/logout"
+              className="rounded-full bg-slate-100 px-3.5 py-1.5 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-200"
             >
-              ダッシュボード
+              ログアウト
             </Link>
           </>
         )}
@@ -58,7 +72,7 @@ export function PrimaryNavigation(props: Props) {
     );
   }
 
-  // 2. 店舗サイト時（site がある場合）: ログイン・ダッシュボードボタンは出さない
+  // 2. 店舗サイト時（site がある場合）
   const displayMenu = [...(site.navigation?.menu ?? [])];
 
   const sortedSocialLinks = [...(site.socialLinks ?? [])].sort(

@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname } from "next/navigation"; // 👈 追加
+import { usePathname } from "next/navigation";
 import { HamburgerMenu } from "@/features/menu/hamburger-menu";
 import { LinkButtonHeader } from "@/components/buttons/link-button";
 import { ShareButtonHeader } from "@/components/buttons/share-button";
@@ -18,8 +18,8 @@ type Props = {
 
 export function MobileNavigation(props: Props) {
   const { site, user, newsItems, onOpenMenuEditor } = props;
-  const pathname = usePathname(); // 👈 現在のパスを取得
-  const isDashboard = pathname?.startsWith("/dashboard"); // 👈 ダッシュボード内かどうかの判定
+  const pathname = usePathname();
+  const isDashboard = pathname?.startsWith("/dashboard");
 
   // ----------------------------------------------------
   // パターンA: ポータル時（site がない場合）
@@ -43,12 +43,23 @@ export function MobileNavigation(props: Props) {
             { label: "新規登録", href: "/signup", type: "link" as const },
           ]
         : []),
-      // 💡 ログイン済み、かつダッシュボード「以外」のページにいる時のみ表示
-      ...(user && !isDashboard
+      // ログイン済み時
+      ...(user
         ? [
+            // ダッシュボード外の時のみダッシュボードを表示
+            ...(!isDashboard
+              ? [
+                  {
+                    label: "ダッシュボード",
+                    href: "/dashboard",
+                    type: "link" as const,
+                  },
+                ]
+              : []),
+            // ログアウト項目を追加
             {
-              label: "ダッシュボード",
-              href: "/dashboard",
+              label: "ログアウト",
+              href: "/logout",
               type: "link" as const,
             },
           ]
