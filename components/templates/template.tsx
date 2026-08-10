@@ -1,9 +1,10 @@
 "use client";
 
+import { useState } from "react"; // 👈 1. useState をインポート
 import Header from "@/components/shared/header";
 import Footer from "@/components/shared/footer";
 import BaseSection from "@/features/section/components/base-section";
-import { Section } from "@/features/section/types"; // 👈 SectionData から Section に変更
+import { Section } from "@/features/section/types";
 import { SiteData, SiteMode } from "@/types/site";
 import { NewsItem } from "@/features/block/news/types";
 import { UserData } from "@/types/user";
@@ -20,7 +21,7 @@ type Props = {
   ) => void;
   onOpenMetaEditor?: () => void;
   onOpenMenuEditor?: () => void;
-  onOpenBlockEditor?: () => void; // ブロック編集モーダル等を開くコールバックを追加
+  onOpenBlockEditor?: () => void;
 };
 
 export default function Template(props: Props) {
@@ -35,6 +36,12 @@ export default function Template(props: Props) {
     onOpenMenuEditor,
     onOpenBlockEditor,
   } = props;
+
+  // 👈 2. 選択中の Section ID を保持する State を追加
+  const [selectedSectionId, setSelectedSectionId] = useState<string | null>(
+    null,
+  );
+
   const sections = site?.layout?.sections;
 
   return (
@@ -47,22 +54,20 @@ export default function Template(props: Props) {
         onOpenBlockEditor={onOpenBlockEditor}
       />
 
-      {sections?.map(
-        (
-          section: Section,
-          sectionIndex: number, // 👈 ここも Section に変更
-        ) => (
-          <BaseSection
-            key={section.id ?? sectionIndex}
-            meta={site.meta}
-            section={{ ...section }}
-            mode={mode}
-            onUpdateBlock={onUpdateBlock ?? (() => {})}
-            onUpdateSection={onUpdateSection ?? (() => {})}
-            onOpenMetaEditor={onOpenMetaEditor ?? (() => {})}
-          />
-        ),
-      )}
+      {sections?.map((section: Section, sectionIndex: number) => (
+        <BaseSection
+          key={section.id ?? sectionIndex}
+          meta={site.meta}
+          section={{ ...section }}
+          mode={mode}
+          // 👈 3. 選択状態と選択時の処理を BaseSection に渡す
+          isSelected={selectedSectionId === section.id}
+          onSelect={(id) => setSelectedSectionId(id)}
+          onUpdateBlock={onUpdateBlock ?? (() => {})}
+          onUpdateSection={onUpdateSection ?? (() => {})}
+          onOpenMetaEditor={onOpenMetaEditor ?? (() => {})}
+        />
+      ))}
 
       <Footer site={site} mode={mode} />
     </div>
