@@ -15,9 +15,11 @@ export default async function Page({
   params: Promise<{ "site-id": string }>;
 }) {
   const session = await getSession();
+  let userId = "";
   let userName = "";
   let userAvatar = "";
   if (session?.user) {
+    userId = session.user.id;
     userName =
       session.user.user_metadata?.full_name ||
       session.user.user_metadata?.name ||
@@ -26,7 +28,7 @@ export default async function Page({
   } else {
     redirect("/login");
   }
-  const user: UserData = { name: userName, avator: userAvatar };
+  const user: UserData = { id: userId, name: userName, avator: userAvatar };
 
   const { "site-id": siteId } = await params;
 

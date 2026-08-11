@@ -11,9 +11,11 @@ export default async function Page() {
   // 1. ログイン状態（セッション）をチェック（ただし、未ログインでもリダイレクトはしない）
   const session = await getSession();
   
+  let userId = "";
   let userName = "";
   let userAvatar = "";
   if (session?.user) {
+    userId  = session.user.id;
     userName =
       session.user.user_metadata?.full_name ||
       session.user.user_metadata?.name ||
@@ -24,7 +26,7 @@ export default async function Page() {
 
   // ログイン中ならUserDataを作成、未ログインならundefinedにする
   const user: UserData | undefined = session?.user 
-    ? { name: userName, avator: userAvatar } 
+    ? { id: userId, name: userName, avator: userAvatar } 
     : undefined;
 
   // 2. データの取得

@@ -16,6 +16,7 @@ export default async function PreviewPage({
     redirect("/login");
   }
 
+  let userId = "";
   let userName = "";
   let userAvatar = "";
   userName =
@@ -23,7 +24,8 @@ export default async function PreviewPage({
     session.user.user_metadata?.name ||
     session.user.email;
   userAvatar = session.user.user_metadata?.avatar_url;
-  const user: UserData = { name: userName, avator: userAvatar };
+  userId = session.user.id;
+  const user: UserData = { id: userId, name: userName, avator: userAvatar };
 
   const { "site-id": siteId } = await params;
 

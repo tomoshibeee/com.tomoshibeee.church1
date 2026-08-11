@@ -11,11 +11,12 @@ type Props = {
   open: boolean;
   onClose: () => void;
   onSelect: (url: string) => void;
+  userId: string; // ユーザーIDを受け取る
 };
 
 type TabType = "cloudinary" | "gdrive";
 
-export function ImagePickerModal({ open, onClose, onSelect }: Props) {
+export function ImagePickerModal({ open, onClose, onSelect, userId }: Props) {
   const [activeTab, setActiveTab] = useState<TabType>("cloudinary");
 
   if (!open) return null;
@@ -80,7 +81,7 @@ export function ImagePickerModal({ open, onClose, onSelect }: Props) {
           {/* 右コンテンツ（選択画面の中身） */}
           <div className="p-6 overflow-y-auto min-w-0">
             {activeTab === "cloudinary" && (
-              <CloudinaryTab onSelect={handleSelect} />
+              <CloudinaryTab onSelect={handleSelect} userId={userId} />
             )}
             {activeTab === "gdrive" && (
               <GoogleDriveTab onSelect={handleSelect} />

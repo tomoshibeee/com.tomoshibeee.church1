@@ -19,9 +19,11 @@ import { DashboardNavigation } from "@/components/navigations/dashboard-navigati
 
 export default async function Page() {
   const session = await getSession();
+  let userId = "";
   let userName = "";
   let userAvatar = "";
   if (session?.user) {
+    userId = session.user.id;
     userName =
       session.user.user_metadata?.full_name ||
       session.user.user_metadata?.name ||
@@ -35,7 +37,7 @@ export default async function Page() {
     redirect("/login");
   }
 
-  const user: UserData = { name: userName, avator: userAvatar };
+  const user: UserData = { id: userId, name: userName, avator: userAvatar };
 
   const news = await getGlobalNews();
   const newsItems = toGlobalNewsItems(news);

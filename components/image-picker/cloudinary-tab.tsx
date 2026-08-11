@@ -6,10 +6,11 @@ import { uploadImage } from "@/lib/cloudinary/upload-image";
 
 type Props = {
   onSelect: (url: string) => void;
+  userId: string; // ユーザーIDを受け取る
 };
 
 export function CloudinaryTab(props: Props) {
-  const { onSelect } = props;
+  const { onSelect, userId } = props;
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [isUploading, setIsUploading] = useState(false); // アップロード中の状態管理
 
@@ -19,7 +20,7 @@ export function CloudinaryTab(props: Props) {
 
     try {
       setIsUploading(true);
-      const url = await uploadImage(file);
+      const url = await uploadImage(file, userId);
       onSelect(url);
     } catch (error) {
       console.error("Upload failed:", error);

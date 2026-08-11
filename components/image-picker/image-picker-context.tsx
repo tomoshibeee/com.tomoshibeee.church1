@@ -18,13 +18,13 @@ const ImagePickerContext = createContext<ImagePickerContextType | undefined>(
   undefined,
 );
 
-export function ImagePickerProvider({ children }: { children: ReactNode }) {
+export function ImagePickerProvider({ children, userId }: { children: ReactNode, userId: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const [callback, setCallback] = useState<(url: string) => void>(() => {});
 
   // 💡 【ここを追加！】isOpen の変化を24時間監視するログ
   useEffect(() => {
-    console.log("🚨 現在の isOpen の値は:", isOpen);
+    // console.log("🚨 現在の isOpen の値は:", isOpen);
   }, [isOpen]);
 
   const openPicker = (onSelect: (url: string) => void) => {
@@ -42,6 +42,7 @@ export function ImagePickerProvider({ children }: { children: ReactNode }) {
         onSelect={(url) => {
           callback(url);
         }}
+        userId={userId}
       />
     </ImagePickerContext.Provider>
   );

@@ -1,10 +1,12 @@
-export async function uploadImage(file: File): Promise<string> {
+export async function uploadImage(file: File, userId: string): Promise<string> {
   const formData = new FormData();
   formData.append("file", file);
   formData.append(
     "upload_preset",
     process.env.NEXT_PUBLIC_CLOUDIARY_PRESET_UPLOAD!
   );
+
+  formData.append("folder", `users/${userId}`);
 
   const res = await fetch(
     `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDIARY_CLOUD_NAME}/image/upload`,

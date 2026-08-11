@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { toast } from "sonner";
 import Template from "@/components/templates/template";
 import { SiteData } from "@/types/site";
 import { ImagePickerProvider } from "@/components/image-picker";
@@ -31,6 +32,9 @@ export default function SiteNavigation(props: Props) {
     null,
   );
 
+  // 追加されたブロックのID管理（スクロール用）
+  const [addedBlockId, setAddedBlockId] = useState<string | null>(null);
+
   const [isMetaOpen, setIsMetaOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isBlockModalOpen, setIsBlockModalOpen] = useState(false);
@@ -43,6 +47,25 @@ export default function SiteNavigation(props: Props) {
       );
     }
   }, [site]);
+
+  // 追加されたブロックへの自動スクロール処理
+  useEffect(() => {
+    if (!addedBlockId) return;
+
+    // DOMの描画完了を待つため小幅なタイマーを挟む
+    const timer = setTimeout(() => {
+      const element = document.getElementById(addedBlockId);
+      if (element) {
+        element.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+      }
+      setAddedBlockId(null);
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [addedBlockId]);
 
   const handleSaveMeta = async (updatedMeta: MetaData) => {
     setSite((prevSite) => ({
@@ -99,11 +122,14 @@ export default function SiteNavigation(props: Props) {
   };
 
   const handleAddBlockFromMaster = async (masterBlock: MasterBlock) => {
-    // site の指定された SectionID のセクションの末尾に MasterBlock から生成したブロックを挿入する
     try {
       const masterBlocks = await getMasterBlocks();
       const latestMasterBlock =
         masterBlocks.find((b) => b.type === masterBlock.type) ?? masterBlock;
+
+      // 新規IDを事前に採番
+      // const newBlockId = `block_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+      const newBlockId = crypto.randomUUID();
 
       setSite((prevSite) => {
         const sections = prevSite.layout?.sections ?? [];
@@ -118,9 +144,8 @@ export default function SiteNavigation(props: Props) {
         const targetSection = sections[effectiveIndex];
         if (!targetSection) return prevSite;
 
-        // 💡 UI 用の Block オブジェクトを組み立てる
         const newBlock: Block = {
-          id: `block_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
+          id: newBlockId,
           type: latestMasterBlock.type,
           variant: latestMasterBlock.default_variant ?? "default",
           data: latestMasterBlock.default_data ?? null,
@@ -144,8 +169,14 @@ export default function SiteNavigation(props: Props) {
           },
         };
       });
+
+      // スクロール対象としてIDを設定
+      setAddedBlockId(newBlockId);
+
+      toast.success(`ブロック「${masterBlock.type}」を追加しました。`);
     } catch (error) {
       console.error("Failed to fetch master blocks on adding:", error);
+      toast.error("ブロックの追加に失敗しました。");
     }
   };
 
@@ -185,7 +216,7 @@ export default function SiteNavigation(props: Props) {
 
   return (
     <>
-      <ImagePickerProvider>
+      <ImagePickerProvider userId={user?.id ?? ""}>
         <Template
           site={site}
           user={user}
