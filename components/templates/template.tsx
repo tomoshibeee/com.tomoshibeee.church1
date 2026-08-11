@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import Header from "@/components/shared/header";
 import Footer from "@/components/shared/footer";
 import BaseSection from "@/features/section/components/base-section";
@@ -14,6 +13,8 @@ type Props = {
   mode?: SiteMode;
   newsItems: NewsItem[];
   user?: UserData;
+  selectedSectionId?: string | null;
+  onSelectSection?: (sectionId: string) => void;
   onUpdateBlock?: (blockId: string, updatedData: Record<string, any>) => void;
   onUpdateSection?: (
     sectionId: string,
@@ -30,6 +31,8 @@ export default function Template(props: Props) {
     mode = "view",
     newsItems,
     user,
+    selectedSectionId,
+    onSelectSection,
     onUpdateBlock,
     onUpdateSection,
     onOpenMetaEditor,
@@ -37,17 +40,11 @@ export default function Template(props: Props) {
     onOpenBlockEditor,
   } = props;
 
-  const [selectedSectionId, setSelectedSectionId] = useState<string | null>(
-    null,
-  );
-
   const sections = site?.layout?.sections;
 
-  // 💡 ブロックの上下移動ハンドラー
   const handleMoveBlock = (blockId: string, direction: "up" | "down") => {
     if (!sections || !onUpdateSection) return;
 
-    // 移動対象のブロックが含まれるセクションを探す
     const targetSection = sections.find((sec) =>
       sec.blocks?.some((b) => b.id === blockId),
     );
@@ -61,18 +58,15 @@ export default function Template(props: Props) {
     const targetIndex = direction === "up" ? index - 1 : index + 1;
     if (targetIndex < 0 || targetIndex >= blocks.length) return;
 
-    // 配列の要素を入れ替え
     const newBlocks = [...blocks];
     const [movedBlock] = newBlocks.splice(index, 1);
     newBlocks.splice(targetIndex, 0, movedBlock);
 
-    // display_order を 1, 2, 3... と振り直す
     const reorderedBlocks = newBlocks.map((block, idx) => ({
       ...block,
       display_order: idx + 1,
     }));
 
-    // セクションの更新通知を呼び出す
     onUpdateSection(targetSection.id, {
       blocks: reorderedBlocks,
     });
@@ -95,11 +89,10 @@ export default function Template(props: Props) {
           section={{ ...section }}
           mode={mode}
           isSelected={selectedSectionId === section.id}
-          onSelect={(id) => setSelectedSectionId(id)}
+          onSelect={(id) => onSelectSection?.(id)}
           onUpdateBlock={onUpdateBlock ?? (() => {})}
           onUpdateSection={onUpdateSection ?? (() => {})}
           onOpenMetaEditor={onOpenMetaEditor ?? (() => {})}
-          // 💡 追加したハンドラーを BaseSection へ渡す
           onMoveBlock={handleMoveBlock}
         />
       ))}

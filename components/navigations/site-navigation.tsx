@@ -13,6 +13,8 @@ import { NewsItem } from "@/features/block/news/types";
 import { UserData } from "@/types/user";
 import { Section } from "@/features/section/types";
 import { MasterBlock } from "@/models/master-block";
+import { getMasterBlocks } from "@/services/master-block-service";
+import { Block } from "@/features/block/index";
 
 type Props = {
   site: SiteData;
@@ -23,6 +25,11 @@ type Props = {
 export default function SiteNavigation(props: Props) {
   const { site: initialSite, newsItems, user } = props;
   const [site, setSite] = useState<SiteData>(initialSite);
+
+  // 選択中セクションのID管理
+  const [selectedSectionId, setSelectedSectionId] = useState<string | null>(
+    null,
+  );
 
   const [isMetaOpen, setIsMetaOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -92,51 +99,56 @@ export default function SiteNavigation(props: Props) {
   };
 
   const handleAddBlockFromMaster = async (masterBlock: MasterBlock) => {
-    // try {
-    //   // 1. マスターから最新のブロック一覧を取得
-    //   const masterBlocks = await getMasterBlocks();
-    //   // 選択された type に一致する最新のマスターデータを取得（見つからなければ渡されたものを使用）
-    //   const latestMasterBlock =
-    //     masterBlocks.find((b) => b.type === masterBlock.type) ?? masterBlock;
-    //   // 2. ステートの更新
-    //   setSite((prevSite) => {
-    //     const sections = prevSite.layout?.sections ?? [];
-    //     // 対象のセクション（末尾のセクション、無ければそのまま返す）
-    //     const targetSectionIndex =
-    //       sections.length > 0 ? sections.length - 1 : 0;
-    //     const targetSection = sections[targetSectionIndex];
-    //     if (!targetSection) return prevSite;
-    //     // 最新のマスターデータから新しい SiteBlock を生成
-    //     const currentBlockCount = targetSection.blocks?.length ?? 0;
-    //     const newBlock = buildSiteBlockFromMaster(
-    //       targetSection.id,
-    //       latestMasterBlock,
-    //       currentBlockCount,
-    //     );
-    //     // セクション配列の更新
-    //     const updatedSections = sections.map((sec, idx) => {
-    //       if (idx === targetSectionIndex) {
-    //         return {
-    //           ...sec,
-    //           blocks: [...(sec.blocks ?? []), newBlock],
-    //         };
-    //       }
-    //       return sec;
-    //     });
-    //     return {
-    //       ...prevSite,
-    //       layout: {
-    //         ...prevSite.layout,
-    //         sections: updatedSections,
-    //       },
-    //     };
-    //   });
-    // } catch (error) {
-    //   console.error("Failed to fetch master blocks on adding:", error);
-    // }
+    // site の指定された SectionID のセクションの末尾に MasterBlock から生成したブロックを挿入する
+    try {
+      const masterBlocks = await getMasterBlocks();
+      const latestMasterBlock =
+        masterBlocks.find((b) => b.type === masterBlock.type) ?? masterBlock;
+
+      setSite((prevSite) => {
+        const sections = prevSite.layout?.sections ?? [];
+        if (sections.length === 0) return prevSite;
+
+        const targetIndex = selectedSectionId
+          ? sections.findIndex((sec) => sec.id === selectedSectionId)
+          : sections.length - 1;
+
+        const effectiveIndex =
+          targetIndex !== -1 ? targetIndex : sections.length - 1;
+        const targetSection = sections[effectiveIndex];
+        if (!targetSection) return prevSite;
+
+        // 💡 UI 用の Block オブジェクトを組み立てる
+        const newBlock: Block = {
+          id: `block_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
+          type: latestMasterBlock.type,
+          variant: latestMasterBlock.default_variant ?? "default",
+          data: latestMasterBlock.default_data ?? null,
+        } as Block;
+
+        const updatedSections = sections.map((sec, idx) => {
+          if (idx === effectiveIndex) {
+            return {
+              ...sec,
+              blocks: [...(sec.blocks ?? []), newBlock],
+            };
+          }
+          return sec;
+        });
+
+        return {
+          ...prevSite,
+          layout: {
+            ...prevSite.layout,
+            sections: updatedSections,
+          },
+        };
+      });
+    } catch (error) {
+      console.error("Failed to fetch master blocks on adding:", error);
+    }
   };
 
-  // 💡 blocksの更新（並び替え）も受け取れるように型と更新ロジックを修正
   const handleUpdateSection = (
     sectionId: string,
     updatedFields: Partial<Section>,
@@ -179,6 +191,8 @@ export default function SiteNavigation(props: Props) {
           user={user}
           mode="edit"
           newsItems={newsItems}
+          selectedSectionId={selectedSectionId}
+          onSelectSection={setSelectedSectionId}
           onUpdateBlock={handleUpdateBlock}
           onUpdateSection={handleUpdateSection}
           onOpenMetaEditor={() => setIsMetaOpen(true)}
