@@ -98,18 +98,6 @@ export function MobileNavigation(props: Props) {
       {/* 共有ボタン */}
       <ShareButtonHeader />
 
-      {/* メニュー編集ボタン（編集モード時） */}
-      {onOpenMenuEditor && (
-        <button
-          type="button"
-          onClick={onOpenMenuEditor}
-          className="flex cursor-pointer items-center justify-center rounded-lg bg-blue-50 p-2 text-blue-600 transition-colors hover:bg-blue-100"
-          title="メニュー編集"
-        >
-          <span className="text-base leading-none">⚙️</span>
-        </button>
-      )}
-
       {/* ハンバーガーメニュー */}
       <HamburgerMenu
         key={JSON.stringify(displayMenu)}
