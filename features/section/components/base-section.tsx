@@ -16,8 +16,10 @@ type Props = {
   ) => void;
   onOpenMetaEditor: () => void;
   mode?: SiteMode;
-  isSelected?: boolean; // 👈 1. 選択状態を受け取る
-  onSelect?: (sectionId: string) => void; // 👈 2. 選択イベントを受け取る
+  isSelected?: boolean;
+  onSelect?: (sectionId: string) => void;
+  // 💡 ブロック移動用ハンドラーを Props に追加
+  onMoveBlock?: (blockId: string, direction: "up" | "down") => void;
 };
 
 export default function BaseSection(props: Props) {
@@ -30,16 +32,15 @@ export default function BaseSection(props: Props) {
     onUpdateBlock,
     onUpdateSection,
     onOpenMetaEditor,
+    onMoveBlock, // 👈 追加
   } = props;
 
   if (!section) return null;
 
   const isEdit = mode === "edit";
 
-  // 💡 section.data?.anchorId を優先参照するように変更
   const anchorId = section.data?.anchorId || section.type || section.id;
 
-  // ✍️ data オブジェクト内に anchorId を詰めて親へ渡す
   const handleAnchorIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!onUpdateSection) return;
     onUpdateSection(section.id, {
@@ -50,6 +51,8 @@ export default function BaseSection(props: Props) {
     });
   };
 
+  const blocks = section.blocks ?? [];
+
   return (
     <section
       id={anchorId}
@@ -57,7 +60,9 @@ export default function BaseSection(props: Props) {
       className={`relative p-0 text-gray-800 scroll-mt-20 ${
         isEdit
           ? `outline-1 outline-offset-[-1px] ${
-              isSelected ? "outline-2 outline-blue-500" : "outline-dashed outline-gray-300"
+              isSelected
+                ? "outline-2 outline-blue-500"
+                : "outline-dashed outline-gray-300"
             }`
           : ""
       }`}
@@ -76,7 +81,7 @@ export default function BaseSection(props: Props) {
         </div>
       )}
 
-      {(section.blocks ?? []).map((block, i) => (
+      {blocks.map((block, i) => (
         <BlockRenderer
           key={block.id ?? `${block.type}-${i}`}
           meta={meta}
@@ -84,6 +89,10 @@ export default function BaseSection(props: Props) {
           onUpdateBlock={onUpdateBlock}
           onOpenMetaEditor={onOpenMetaEditor}
           mode={mode}
+          // 💡 ここで BlockRenderer に移動用の props を渡します
+          onMoveBlock={onMoveBlock}
+          isFirst={i === 0}
+          isLast={i === blocks.length - 1}
         />
       ))}
     </section>

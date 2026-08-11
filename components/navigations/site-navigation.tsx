@@ -6,31 +6,28 @@ import { SiteData } from "@/types/site";
 import { ImagePickerProvider } from "@/components/image-picker";
 import { MetaModal } from "@/features/meta/components/meta-modal";
 import { MenuModal } from "@/features/menu/components/menu-modal";
-import { BlockModal } from "@/features/block/components/block-modal"; // 👈 ブロック追加モーダル
+import { BlockModal } from "@/features/block/components/block-modal";
 import { MetaData } from "@/types/site-meta";
 import { MenuItem } from "@/types/site-menu";
 import { NewsItem } from "@/features/block/news/types";
 import { UserData } from "@/types/user";
 import { Section } from "@/features/section/types";
-import { MasterBlock } from "@/models/master-block"; // 👈 追加
-import { getMasterBlocks } from "@/services/master-block-service";
+import { MasterBlock } from "@/models/master-block";
 
 type Props = {
   site: SiteData;
   newsItems: NewsItem[];
-  user?: UserData; // 編集画面で必要
+  user?: UserData;
 };
 
 export default function SiteNavigation(props: Props) {
   const { site: initialSite, newsItems, user } = props;
   const [site, setSite] = useState<SiteData>(initialSite);
 
-  // 各モーダルの開閉状態を個別に管理
   const [isMetaOpen, setIsMetaOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isBlockModalOpen, setIsBlockModalOpen] = useState(false); // 👈 ブロック追加モーダル用
+  const [isBlockModalOpen, setIsBlockModalOpen] = useState(false);
 
-  // 編集中のサイトデータを localStorage に同期
   useEffect(() => {
     if (site?.meta?.site_id) {
       localStorage.setItem(
@@ -40,7 +37,6 @@ export default function SiteNavigation(props: Props) {
     }
   }, [site]);
 
-  // 基本情報の保存
   const handleSaveMeta = async (updatedMeta: MetaData) => {
     setSite((prevSite) => ({
       ...prevSite,
@@ -51,7 +47,6 @@ export default function SiteNavigation(props: Props) {
     }));
   };
 
-  // メニューの保存
   const handleSaveMenu = async (updatedMenu: MenuItem[]) => {
     setSite((prevSite) => ({
       ...prevSite,
@@ -62,7 +57,6 @@ export default function SiteNavigation(props: Props) {
     }));
   };
 
-  // 💡 ブロックのデータ更新処理
   const handleUpdateBlock = (
     blockId: string,
     updatedData: Record<string, any>,
@@ -97,7 +91,6 @@ export default function SiteNavigation(props: Props) {
     });
   };
 
-  // ➕ マスターから最新データを取得して SiteBlock を生成・追加する処理
   const handleAddBlockFromMaster = async (masterBlock: MasterBlock) => {
     // try {
     //   // 1. マスターから最新のブロック一覧を取得
@@ -143,9 +136,10 @@ export default function SiteNavigation(props: Props) {
     // }
   };
 
+  // 💡 blocksの更新（並び替え）も受け取れるように型と更新ロジックを修正
   const handleUpdateSection = (
     sectionId: string,
-    updatedFields: Partial<Omit<Section, "id" | "blocks">>,
+    updatedFields: Partial<Section>,
   ) => {
     setSite((prevSite) => {
       const nextSections = prevSite.layout.sections.map((section) => {
@@ -153,6 +147,9 @@ export default function SiteNavigation(props: Props) {
           return {
             ...section,
             ...updatedFields,
+            ...(updatedFields.blocks && {
+              blocks: updatedFields.blocks,
+            }),
             ...(updatedFields.data && {
               data: {
                 ...section.data,
@@ -186,11 +183,10 @@ export default function SiteNavigation(props: Props) {
           onUpdateSection={handleUpdateSection}
           onOpenMetaEditor={() => setIsMetaOpen(true)}
           onOpenMenuEditor={() => setIsMenuOpen(true)}
-          onOpenBlockEditor={() => setIsBlockModalOpen(true)} // 👈 Template（Toolbar）へ伝達
+          onOpenBlockEditor={() => setIsBlockModalOpen(true)}
         />
       </ImagePickerProvider>
 
-      {/* 基本情報編集モーダル */}
       <MetaModal
         isOpen={isMetaOpen}
         onClose={() => setIsMetaOpen(false)}
@@ -198,7 +194,6 @@ export default function SiteNavigation(props: Props) {
         onSave={handleSaveMeta}
       />
 
-      {/* ナビゲーションメニュー編集モーダル */}
       <MenuModal
         isOpen={isMenuOpen}
         onClose={() => setIsMenuOpen(false)}
@@ -206,7 +201,6 @@ export default function SiteNavigation(props: Props) {
         onSave={handleSaveMenu}
       />
 
-      {/* ➕ ブロック追加モーダル */}
       <BlockModal
         isOpen={isBlockModalOpen}
         onClose={() => setIsBlockModalOpen(false)}

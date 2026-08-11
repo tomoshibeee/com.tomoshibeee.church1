@@ -29,6 +29,10 @@ interface Props {
   onUpdateBlock: (blockId: string, updatedData: Record<string, any>) => void;
   onOpenMetaEditor: () => void;
   mode?: SiteMode;
+  // 💡 上下移動用の Props を追加
+  onMoveBlock?: (blockId: string, direction: "up" | "down") => void;
+  isFirst?: boolean;
+  isLast?: boolean;
 }
 
 type BlockRendererMap = {
@@ -146,14 +150,23 @@ const blockRegistry: BlockRendererMap = {
 };
 
 export default function BlockRenderer(props: Props) {
-  const { meta, block, mode = "view", onUpdateBlock, onOpenMetaEditor } = props;
+  const {
+    meta,
+    block,
+    mode = "view",
+    onUpdateBlock,
+    onOpenMetaEditor,
+    onMoveBlock,
+    isFirst = false,
+    isLast = false,
+  } = props;
+
   const render = blockRegistry[block.type];
 
   if (!render) return null;
 
   const isEdit = mode === "edit";
 
-  // 💡 block.data.anchorId を優先して参照
   const anchorId = (block.data as any)?.anchorId;
 
   const handleUpdateFields = (updatedData: Record<string, any>) => {
@@ -162,7 +175,6 @@ export default function BlockRenderer(props: Props) {
     }
   };
 
-  // ✍️ anchorId の変更を data オブジェクト内に更新して親に伝える
   const handleAnchorIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     handleUpdateFields({
       ...block.data,
@@ -179,18 +191,45 @@ export default function BlockRenderer(props: Props) {
   );
 
   return (
-    <section id={anchorId} className="relative scroll-mt-20">
-      {/* 💡 editモード時：右上オーバーレイ入力欄 */}
+    <section id={anchorId} className="relative scroll-mt-20 group">
+      {/* 💡 editモード時：操作ツールバー（右上） */}
       {isEdit && (
-        <div className="absolute right-3 top-3 z-30 flex items-center gap-1 rounded-2xl bg-slate-900/80 px-2.5 py-1 text-xs text-white shadow-md backdrop-blur-sm">
-          <span className="font-mono text-slate-400">#</span>
-          <input
-            type="text"
-            value={anchorId ?? ""}
-            onChange={handleAnchorIdChange}
-            placeholder={block.type || "block"}
-            className="w-28 border-b border-white/30 bg-transparent font-mono text-xs text-white placeholder-slate-400 focus:border-white focus:outline-none"
-          />
+        <div className="absolute right-3 top-3 z-30 flex items-center gap-2 rounded-2xl bg-slate-900/85 px-3 py-1.5 text-xs text-white shadow-md backdrop-blur-sm transition-opacity">
+          {/* 上下移動ボタン */}
+          {onMoveBlock && (
+            <div className="flex items-center gap-1 border-r border-slate-700 pr-2">
+              <button
+                type="button"
+                onClick={() => onMoveBlock(block.id, "up")}
+                disabled={isFirst}
+                title="上へ移動"
+                className="flex h-6 w-6 items-center justify-center rounded-lg hover:bg-slate-700 disabled:opacity-30 disabled:hover:bg-transparent transition-colors cursor-pointer disabled:cursor-not-allowed"
+              >
+                ▲
+              </button>
+              <button
+                type="button"
+                onClick={() => onMoveBlock(block.id, "down")}
+                disabled={isLast}
+                title="下へ移動"
+                className="flex h-6 w-6 items-center justify-center rounded-lg hover:bg-slate-700 disabled:opacity-30 disabled:hover:bg-transparent transition-colors cursor-pointer disabled:cursor-not-allowed"
+              >
+                ▼
+              </button>
+            </div>
+          )}
+
+          {/* アンカーID入力 */}
+          <div className="flex items-center gap-1">
+            <span className="font-mono text-slate-400">#</span>
+            <input
+              type="text"
+              value={anchorId ?? ""}
+              onChange={handleAnchorIdChange}
+              placeholder={block.type || "block"}
+              className="w-24 border-b border-white/30 bg-transparent font-mono text-xs text-white placeholder-slate-400 focus:border-white focus:outline-none"
+            />
+          </div>
         </div>
       )}
 
