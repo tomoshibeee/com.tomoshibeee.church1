@@ -200,7 +200,7 @@ export default function BlockRenderer(props: Props) {
             <div className="flex items-center gap-1 border-r border-slate-700 pr-2">
               <button
                 type="button"
-                onClick={() => onMoveBlock(block.id, "up")}
+                onClick={() => block.id &&onMoveBlock(block.id, "up")}
                 disabled={isFirst}
                 title="上へ移動"
                 className="flex h-6 w-6 items-center justify-center rounded-lg hover:bg-slate-700 disabled:opacity-30 disabled:hover:bg-transparent transition-colors cursor-pointer disabled:cursor-not-allowed"
@@ -209,7 +209,7 @@ export default function BlockRenderer(props: Props) {
               </button>
               <button
                 type="button"
-                onClick={() => onMoveBlock(block.id, "down")}
+                onClick={() => block.id && onMoveBlock(block.id, "down")}
                 disabled={isLast}
                 title="下へ移動"
                 className="flex h-6 w-6 items-center justify-center rounded-lg hover:bg-slate-700 disabled:opacity-30 disabled:hover:bg-transparent transition-colors cursor-pointer disabled:cursor-not-allowed"
